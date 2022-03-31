@@ -20,7 +20,6 @@ public class PlayerJoinEventHandler implements Listener {
 		if(p.isOp()) {
 			if(plugin.UpdateAviable == true) {
 				p.sendMessage(plugin.prefix + "§a-=> Update is available! <=-");
-				p.sendMessage(plugin.prefix + "§6https://www.spigotmc.org/resources/api-title-tablist-actionbar-ping-api-%E2%98%85-1-8-1-9-%E2%98%85-tta.19595/");
 			}
 		}
 	}

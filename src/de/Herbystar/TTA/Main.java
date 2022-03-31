@@ -42,9 +42,11 @@ public class Main extends JavaPlugin {
 		loadConfig();
 		activateGlow();
 		GlowColor.initializeColorScoreboard();
+		/**
+		 * Disabled as there is no updater currently included
 		registerEvents();
+		*/
 		ServerVersionHook();
-		//StartMetrics();
 		startBossBarUpdater();
 		Bukkit.getConsoleSender().sendMessage(this.prefix + "§3Version: " + this.getDescription().getVersion() + " §2by " + "§4" + this.getDescription().getAuthors() + "§2 enabled!");
 
@@ -83,20 +85,7 @@ public class Main extends JavaPlugin {
 			}
 		}.runTaskTimer(this, 0, 40);
 	}
-	
-	/*
-	public void StartMetrics() {
-		try {
-			Metrics m = new Metrics(this);
-			m.start();
-			Bukkit.getConsoleSender().sendMessage(this.prefix + "§2Started §6Metrics §2successful!");
-		} catch (IOException e) {
-			e.printStackTrace();
-			Bukkit.getConsoleSender().sendMessage(this.prefix + "§4Failed to start the §6Metrics§4!");
-		}
-	}
-	*/
-	
+		
 	public int getVersionNumber(String version) {
 		return Integer.parseInt(version.replace(".", ""));
 	}
@@ -115,6 +104,7 @@ public class Main extends JavaPlugin {
 				return version = !version.isEmpty() ? version + "." : ""; 
 	}
 	
+	@SuppressWarnings("unused")
 	private void registerEvents() {
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinEventHandler(this), this);
 	}	
