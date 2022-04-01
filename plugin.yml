@@ -1,6 +1,6 @@
 name: TTA
 main: de.Herbystar.TTA.Main
-version: 5.1-SNAPSHOT
+version: 5.1
 website: https://github.com/herby2212/TTA
 author: Herbystar
 loadbefore: [CTSNC, CTSNCPlus, PlayerToggle, MagicMusic, CookieCounter]
