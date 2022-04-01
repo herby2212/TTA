@@ -2,6 +2,7 @@ package de.Herbystar.TTA;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import de.Herbystar.TTA.Glow.GlowColor;
 import de.Herbystar.TTA.Glow.ItemEnchant;
 import de.Herbystar.TTA.BossBar.NMS_BossBar;
 import de.Herbystar.TTA.Utils.TPS;
+import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
 
 public class Main extends JavaPlugin {
 	
@@ -40,6 +42,11 @@ public class Main extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage("§c-> You are not permitted to redistributing this plugin as your own!");
 		Bukkit.getConsoleSender().sendMessage("§c======>[§aTerms Accepted!§c]<======");
 		Bukkit.getConsoleSender().sendMessage("");
+		
+		Bukkit.getConsoleSender().sendMessage("Debug Version Start");
+		Bukkit.getConsoleSender().sendMessage(TTA_BukkitVersion.isVersion("1.10", 2) + "");
+		Bukkit.getConsoleSender().sendMessage("Debug Version End");
+		
 		loadConfig();
 		activateGlow();
 		GlowColor.initializeColorScoreboard();
@@ -47,6 +54,7 @@ public class Main extends JavaPlugin {
 		 * Disabled as there is no updater currently included
 		registerEvents();
 		*/
+		Bukkit.getConsoleSender().sendMessage("Debug Version");
 		ServerVersionHook();
 		startBossBarUpdater();
 		Bukkit.getConsoleSender().sendMessage(this.prefix + "§3Version: " + this.getDescription().getVersion() + " §2by " + "§4" + this.getDescription().getAuthors() + "§2 enabled!");
@@ -137,26 +145,32 @@ public class Main extends JavaPlugin {
 		if(getServerVersion().equalsIgnoreCase("v1_9_R2.")) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.9 Support §2enabled!");
 		}
-		if(Bukkit.getVersion().contains("1.10")) {
+		if(TTA_BukkitVersion.isVersion("1.10", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.10 Support §2enabled!");
 		}
-		if(Bukkit.getVersion().contains("1.11")) {
+		if(TTA_BukkitVersion.isVersion("1.11", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.11 Support §2enabled!");
 		}
-		if(Bukkit.getVersion().contains("1.12")) {
+		if(TTA_BukkitVersion.isVersion("1.12", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.12 Support §2enabled!");
 		}
-		if(Bukkit.getVersion().contains("1.13")) {
+		if(TTA_BukkitVersion.isVersion("1.13", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.13 Support §2enabled!");
 		}
-		if(Bukkit.getVersion().contains("1.14")) {
+		if(TTA_BukkitVersion.isVersion("1.14", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.14 Support §2enabled!");
 		}
-		if(Bukkit.getVersion().contains("1.15")) {
+		if(TTA_BukkitVersion.isVersion("1.15", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.15 Support §2enabled!");
 		}
-		if(Bukkit.getVersion().contains("1.16")) {
+		if(TTA_BukkitVersion.isVersion("1.16", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.16 Support §2enabled!");
+		}
+		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.17 Support §2enabled!");
+		}
+		if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.18 Support §2enabled!");
 		}
 	}
 	
@@ -186,7 +200,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage("TTA Debug Mode started!");
 		Bukkit.getConsoleSender().sendMessage("");
 		Bukkit.getConsoleSender().sendMessage("Engine: " + TTA_Methods.getEngine());
-		Bukkit.getConsoleSender().sendMessage("Running version: " + Bukkit.getServer().getBukkitVersion());
+		Bukkit.getConsoleSender().sendMessage("Running version: " + TTA_BukkitVersion.getVersion());
 		Bukkit.getConsoleSender().sendMessage("");
 		Bukkit.getConsoleSender().sendMessage("Supported Methods:");
 		Bukkit.getConsoleSender().sendMessage("");
@@ -203,7 +217,7 @@ public class Main extends JavaPlugin {
 		if(getServerVersion().equalsIgnoreCase("v1_7_R4.")) {
 			supMethods.add("sendTitle");
 		}		
-		if(getServerVersion().contains("v1_8_R")) {
+		if(TTA_BukkitVersion.isVersion("1.8", 2)) {
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");
 			supMethods.add("sendTitle");
@@ -214,7 +228,7 @@ public class Main extends JavaPlugin {
 			supMethods.add("spawnHead");
 			supMethods.add("GetSoundByName");
 		}
-		if(getServerVersion().contains("v1_9_R") || Bukkit.getVersion().contains("1.10") || Bukkit.getVersion().contains("1.11") || Bukkit.getVersion().contains("1.12")) {
+		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.9", "1.10", "1.11", "1.12"), 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.remove("hasBossBar");
 			supMethods.remove("removeBossBar");
@@ -239,7 +253,7 @@ public class Main extends JavaPlugin {
 			supMethods.add("removeBossBar");
 			supMethods.add("GetSoundByName");
 		}	
-		if(Bukkit.getVersion().contains("1.13")) {
+		if(TTA_BukkitVersion.isVersion("1.13", 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.remove("hasBossBar");
 			supMethods.remove("removeBossBar");
@@ -263,7 +277,7 @@ public class Main extends JavaPlugin {
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
 		}
-		if(Bukkit.getVersion().contains("1.14") || Bukkit.getVersion().contains("1.15") || Bukkit.getVersion().contains("1.16")) {
+		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.14", "1.15", "1.16", "1.17", "1.18"), 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.remove("hasBossBar");
 			supMethods.remove("removeBossBar");

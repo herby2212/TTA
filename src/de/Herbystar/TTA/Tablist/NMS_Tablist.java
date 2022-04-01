@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.Herbystar.TTA.Main;
+import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
 
 public class NMS_Tablist {
 	
@@ -47,7 +48,7 @@ public class NMS_Tablist {
 		}
 		
 		try {
-			if(Bukkit.getVersion().contains("1.12") | Bukkit.getVersion().contains("1.13") | Bukkit.getVersion().contains("1.14") | Bukkit.getVersion().contains("1.15") | Bukkit.getVersion().contains("1.16")) {
+			if(TTA_BukkitVersion.getVersionAsInt(2) >= 112) {
 			    Object tabheader = this.getNMSClass("ChatComponentText").getConstructor(new Class[] { String.class }).newInstance(new Object[] { header });
 			    Object tabfooter = this.getNMSClass("ChatComponentText").getConstructor(new Class[] { String.class }).newInstance(new Object[] { footer });
 

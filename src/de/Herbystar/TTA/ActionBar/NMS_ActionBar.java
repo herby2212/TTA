@@ -1,12 +1,14 @@
 package de.Herbystar.TTA.ActionBar;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.Herbystar.TTA.Main;
+import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
 
 public class NMS_ActionBar {
 	
@@ -43,19 +45,18 @@ public class NMS_ActionBar {
 			msg = "";
 		}		
 		try {
-			if(Bukkit.getVersion().contains("1.12") | Bukkit.getVersion().contains("1.13") | Bukkit.getVersion().contains("1.14") | Bukkit.getVersion().contains("1.15")) {
+			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.12", "1.13", "1.14", "1.15"), 2)) {
 			      Object ab = this.getNMSClass("ChatComponentText").getConstructor(new Class[] { String.class }).newInstance(new Object[] { msg });
 			      Object acm = this.getNMSClass("ChatMessageType").getField("GAME_INFO").get(null);
 			      Constructor ac = this.getNMSClass("PacketPlayOutChat").getConstructor(new Class[] { this.getNMSClass("IChatBaseComponent"), this.getNMSClass("ChatMessageType") });
 			      Object abPacket = ac.newInstance(new Object[] { ab, acm });
 			      this.sendPacket(p, abPacket);
-		      } else if(Bukkit.getVersion().contains("1.16")) {
+		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 116) {
 			      Object ab = this.getNMSClass("ChatComponentText").getConstructor(new Class[] { String.class }).newInstance(new Object[] { msg });
 			      Object acm = this.getNMSClass("ChatMessageType").getField("GAME_INFO").get(null);
 			      Constructor ac = this.getNMSClass("PacketPlayOutChat").getConstructor(new Class[] { this.getNMSClass("IChatBaseComponent"), this.getNMSClass("ChatMessageType"), UUID.class });
 			      Object abPacket = ac.newInstance(new Object[] { ab, acm, p.getUniqueId() });
 			      this.sendPacket(p, abPacket);
-
 		      } else {
 			      Object ab = this.getNMSClass("ChatComponentText").getConstructor(new Class[] { String.class }).newInstance(new Object[] { msg });
 			      Constructor ac = this.getNMSClass("PacketPlayOutChat").getConstructor(new Class[] { this.getNMSClass("IChatBaseComponent"), Byte.TYPE });

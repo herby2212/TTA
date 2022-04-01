@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import de.Herbystar.TTA.Utils.Reflection;
+import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
 
 public class TTA_HoloAPI {
  
@@ -52,7 +53,7 @@ public class TTA_HoloAPI {
             craftWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
             packetClass = Class.forName("net.minecraft.server." + version + ".PacketPlayOutSpawnEntityLiving");
             entityLivingClass = Class.forName("net.minecraft.server." + version + ".EntityLiving");
-            if(Bukkit.getVersion().contains("1.14") | Bukkit.getVersion().contains("1.15") | Bukkit.getVersion().contains("1.16")) {
+            if(TTA_BukkitVersion.getVersionAsInt(2) > 114) {
             	armorStandConstructor = armorStand.getConstructor(new Class[] { worldClass, double.class, double.class, double.class });
             } else {
             	armorStandConstructor = armorStand.getConstructor(new Class[] { worldClass });
@@ -118,12 +119,12 @@ public class TTA_HoloAPI {
             Object craftWorldObj = craftWorld.cast(w);
             Method getHandleMethod = craftWorldObj.getClass().getMethod("getHandle", new Class<?>[0]);
             Object entityObject = null;
-            if(Bukkit.getVersion().contains("1.14") | Bukkit.getVersion().contains("1.15") | Bukkit.getVersion().contains("1.16")) {
+            if(TTA_BukkitVersion.getVersionAsInt(2) >= 114) {
             	entityObject = armorStandConstructor.newInstance(new Object[] { getHandleMethod.invoke(craftWorldObj, new Object[0]), 0.0, 0.0, 0.0 });
             } else {
                 entityObject = armorStandConstructor.newInstance(new Object[] { getHandleMethod.invoke(craftWorldObj, new Object[0]) });
             }
-            if(Bukkit.getVersion().contains("1.13") | Bukkit.getVersion().contains("1.14") | Bukkit.getVersion().contains("1.15") | Bukkit.getVersion().contains("1.16")) {
+            if(TTA_BukkitVersion.getVersionAsInt(2) >= 113) {
                 Method setCustomName = entityObject.getClass().getMethod("setCustomName", new Class<?>[] { IChatBaseComponent });
                 Method fromStringOrNull = CraftChatMessage.getMethod("fromStringOrNull", new Class[] { String.class });
                 setCustomName.invoke(entityObject, fromStringOrNull.invoke(CraftChatMessage, new Object[] {text}));
@@ -134,7 +135,7 @@ public class TTA_HoloAPI {
             Method setCustomNameVisible = nmsEntity.getMethod("setCustomNameVisible", new Class[] { boolean.class });
             setCustomNameVisible.invoke(entityObject, new Object[] { true });
             Method setGravity = null;
-            if(Bukkit.getVersion().contains("1.10") | Bukkit.getVersion().contains("1.11") | Bukkit.getVersion().contains("1.12") | Bukkit.getVersion().contains("1.13") | Bukkit.getVersion().contains("1.14") | Bukkit.getVersion().contains("1.15") | Bukkit.getVersion().contains("1.16")) {
+            if(TTA_BukkitVersion.getVersionAsInt(2) >= 110) {
 	            setGravity = entityObject.getClass().getMethod("setNoGravity", new Class<?>[] { boolean.class });
 	            setGravity.invoke(entityObject, new Object[] { false });
 			} else {

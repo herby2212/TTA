@@ -26,6 +26,7 @@ import de.Herbystar.TTA.ActionBar.NMS_ActionBar;
 import de.Herbystar.TTA.BossBar.NMS_BossBar;
 import de.Herbystar.TTA.BossBar.TTA_BossBar;
 import de.Herbystar.TTA.Utils.TPS;
+import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
 import de.Herbystar.TTA.Utils.Ping;
 
 public class TTA_Methods {
@@ -244,7 +245,7 @@ public class TTA_Methods {
 		if(s.getType() == Material.SKULL) {
 			Skull sk = (Skull) s.getState();
 			sk.setSkullType(SkullType.PLAYER);
-			if(Bukkit.getVersion().contains("1.10") | Bukkit.getVersion().contains("1.11") | Bukkit.getVersion().contains("1.12") | Bukkit.getVersion().contains("1.13") | Bukkit.getVersion().contains("1.14") | Bukkit.getVersion().contains("1.15") | Bukkit.getVersion().contains("1.16")) {
+			if(TTA_BukkitVersion.getVersionAsInt(2) >= 110) {
 				sk.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
 			} else {
 				sk.setOwner(owner);									
