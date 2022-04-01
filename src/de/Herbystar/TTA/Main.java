@@ -124,6 +124,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage(this.prefix + "§6Engine: §e" + TTA_BukkitVersion.getEngine());
 		if(getServerVersion().contains("v1_6")) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.6 Support §2enabled!");
+			return;
 		}
 		if(getServerVersion().contains("v1_7")) {
 			if(getServerVersion().equalsIgnoreCase("v1_7_R4.")) {
@@ -131,42 +132,55 @@ public class Main extends JavaPlugin {
 			} else {
 				Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.7 Support §2enabled!");
 			}
+			return;
 		}
 		if(getServerVersion().equalsIgnoreCase("v1_8_R1.")) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.8 Support §2enabled!");
+			return;
 		}
 		if(getServerVersion().equalsIgnoreCase("v1_8_R2.")) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.8.3 Support §2enabled!");
+			return;
 		}
 		if(getServerVersion().equalsIgnoreCase("v1_8_R3.")) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.8.4-1.8.9 Support §2enabled!");
+			return;
 		}
 		if(getServerVersion().equalsIgnoreCase("v1_9_R1.")) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.9 Support §2enabled!");
+			return;
 		}
 		if(getServerVersion().equalsIgnoreCase("v1_9_R2.")) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.9 Support §2enabled!");
+			return;
 		}
 		if(TTA_BukkitVersion.isVersion("1.10", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.10 Support §2enabled!");
+			return;
 		}
 		if(TTA_BukkitVersion.isVersion("1.11", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.11 Support §2enabled!");
+			return;
 		}
 		if(TTA_BukkitVersion.isVersion("1.12", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.12 Support §2enabled!");
+			return;
 		}
 		if(TTA_BukkitVersion.isVersion("1.13", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.13 Support §2enabled!");
+			return;
 		}
 		if(TTA_BukkitVersion.isVersion("1.14", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.14 Support §2enabled!");
+			return;
 		}
 		if(TTA_BukkitVersion.isVersion("1.15", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.15 Support §2enabled!");
+			return;
 		}
 		if(TTA_BukkitVersion.isVersion("1.16", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.16 Support §2enabled!");
+			return;
 		}
 		
 		this.unsupportedVersion = true;
