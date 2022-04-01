@@ -1,0 +1,7 @@
+name: TTA
+main: de.Herbystar.TTA.Main
+version: 5.1-SNAPSHOT
+website: https://github.com/herby2212/TTA
+author: Herbystar
+loadbefore: [CTSNC, CTSNCPlus, PlayerToggle, MagicMusic, CookieCounter]
+description: Title, Tablist, ActionBar, BossBar, Holo, Ping, Glow API!
