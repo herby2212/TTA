@@ -29,6 +29,7 @@ public class Main extends JavaPlugin {
 	private Pattern Version_Pattern = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");
 	public boolean UpdateAviable;
 	public static Main instance;
+	private boolean unsupportedVersion = false;
 	public Team black;
 	public HashMap<UUID, List<Object>> bossBarUpdater = new HashMap<UUID, List<Object>>();
 	
@@ -42,11 +43,14 @@ public class Main extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage("§c-> You are not permitted to redistributing this plugin as your own!");
 		Bukkit.getConsoleSender().sendMessage("§c======>[§aTerms Accepted!§c]<======");
 		Bukkit.getConsoleSender().sendMessage("");
-		
-		Bukkit.getConsoleSender().sendMessage("Debug Version Start");
-		Bukkit.getConsoleSender().sendMessage(TTA_BukkitVersion.isVersion("1.10", 2) + "");
-		Bukkit.getConsoleSender().sendMessage("Debug Version End");
-		
+		ServerVersionHook();
+		if(unsupportedVersion == true) {
+			Bukkit.getServer().getConsoleSender().sendMessage("");
+			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§cMinecraft version currently not supported!");
+			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§cShutting now down!");
+			Bukkit.getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 		loadConfig();
 		activateGlow();
 		GlowColor.initializeColorScoreboard();
@@ -54,8 +58,6 @@ public class Main extends JavaPlugin {
 		 * Disabled as there is no updater currently included
 		registerEvents();
 		*/
-		Bukkit.getConsoleSender().sendMessage("Debug Version");
-		ServerVersionHook();
 		startBossBarUpdater();
 		Bukkit.getConsoleSender().sendMessage(this.prefix + "§3Version: " + this.getDescription().getVersion() + " §2by " + "§4" + this.getDescription().getAuthors() + "§2 enabled!");
 
@@ -119,7 +121,7 @@ public class Main extends JavaPlugin {
 	}	
 	
 	private void ServerVersionHook() {
-		Bukkit.getConsoleSender().sendMessage(this.prefix + "§6Engine: §e" + TTA_Methods.getEngine());
+		Bukkit.getConsoleSender().sendMessage(this.prefix + "§6Engine: §e" + TTA_BukkitVersion.getEngine());
 		if(getServerVersion().contains("v1_6")) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.6 Support §2enabled!");
 		}
@@ -166,12 +168,8 @@ public class Main extends JavaPlugin {
 		if(TTA_BukkitVersion.isVersion("1.16", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.16 Support §2enabled!");
 		}
-		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
-			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.17 Support §2enabled!");
-		}
-		if(TTA_BukkitVersion.isVersion("1.18", 2)) {
-			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.18 Support §2enabled!");
-		}
+		
+		this.unsupportedVersion = true;
 	}
 	
 	private void activateGlow() {
@@ -199,7 +197,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage("");
 		Bukkit.getConsoleSender().sendMessage("TTA Debug Mode started!");
 		Bukkit.getConsoleSender().sendMessage("");
-		Bukkit.getConsoleSender().sendMessage("Engine: " + TTA_Methods.getEngine());
+		Bukkit.getConsoleSender().sendMessage("Engine: " + TTA_BukkitVersion.getEngine());
 		Bukkit.getConsoleSender().sendMessage("Running version: " + TTA_BukkitVersion.getVersion());
 		Bukkit.getConsoleSender().sendMessage("");
 		Bukkit.getConsoleSender().sendMessage("Supported Methods:");
@@ -277,7 +275,7 @@ public class Main extends JavaPlugin {
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
 		}
-		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.14", "1.15", "1.16", "1.17", "1.18"), 2)) {
+		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.14", "1.15", "1.16"), 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.remove("hasBossBar");
 			supMethods.remove("removeBossBar");

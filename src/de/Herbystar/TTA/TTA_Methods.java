@@ -254,20 +254,6 @@ public class TTA_Methods {
 		}
 	}
 	
-	public static String getEngine() {
-		String e = "Unknown Engine!";
-		if(Bukkit.getVersion().contains("Paper")) {
-			e = "Paper";
-		}
-		if(Bukkit.getVersion().contains("Spigot")) {
-			e = "Spigot";
-		}
-		if(Bukkit.getVersion().contains("Bukkit")) {
-			e = "Bukkit | CraftBukkit";
-		}
-		return e;
-	}
-	
 	/*
 	 * BossBar
 	 */

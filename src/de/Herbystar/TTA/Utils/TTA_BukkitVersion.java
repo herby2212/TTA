@@ -45,7 +45,6 @@ public class TTA_BukkitVersion {
 	}
 	
 	public static boolean isVersion(String version, int parts) {
-		Bukkit.getConsoleSender().sendMessage(getVersion(true, parts));
 		return version.equalsIgnoreCase(getVersion(true, parts));
 	}
 	
@@ -55,5 +54,19 @@ public class TTA_BukkitVersion {
 	
 	public static boolean matchVersion(List<String> versions, int parts) {
 		return versions.contains(getVersion(true, parts));
+	}
+	
+	public static String getEngine() {
+		String e = "Unknown Engine!";
+		if(Bukkit.getVersion().contains("Paper")) {
+			e = "Paper";
+		}
+		if(Bukkit.getVersion().contains("Spigot")) {
+			e = "Spigot";
+		}
+		if(Bukkit.getVersion().contains("Bukkit")) {
+			e = "Bukkit | CraftBukkit";
+		}
+		return e;
 	}
 }
