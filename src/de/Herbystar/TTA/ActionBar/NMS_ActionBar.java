@@ -34,19 +34,23 @@ public class NMS_ActionBar {
 	
     static {    
         try {
-        	
-        	packetClass = Reflection.getNMSClass("Packet");
+        	//1.17 Support
+	    	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+	    		updateToMC17Classes();
+	    	} else {
+	        	packetClass = Reflection.getNMSClass("Packet");
 
-        	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
-        	chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
-        	
-        	chatMessageTypeClass = Reflection.getNMSClass("ChatMessageType");
-        	
-        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
-        	                    	
-        	packetPlayOutChatClass = Reflection.getNMSClass("PacketPlayOutChat");
-        	packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass);
+	        	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
+	        	chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
+	        	
+	        	chatMessageTypeClass = Reflection.getNMSClass("ChatMessageType");
+	        	
+	        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
+	        	                    	
+	        	packetPlayOutChatClass = Reflection.getNMSClass("PacketPlayOutChat");
+	        	packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass);
 
+	    	}
         } catch (NoSuchMethodException | SecurityException ex) {
             System.err.println("Error - Classes not initialized!");
 			ex.printStackTrace();
@@ -56,7 +60,12 @@ public class NMS_ActionBar {
 	private void sendPacket(Player player, Object packet) {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
-		    Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
+			Object playerConnection;
+			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			    playerConnection = handle.getClass().getField("b").get(handle);
+			} else {
+			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
+			}
 		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -75,14 +84,15 @@ public class NMS_ActionBar {
 			      this.sendPacket(p, abPacket);
 		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 116) {
 		    	  packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass, UUID.class);
-		    	  
-		    	  //1.17 Support
-		    	  if(TTA_BukkitVersion.isVersion("1.17", 2)) {
-		    		  this.updateToMC17Classes();
-		    	  }
-		    	  
+		    	  		    	  
 			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
-			      Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
+			      Object acm;
+			      if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			    	  acm = chatMessageTypeClass.getField("c").get(null);
+			      } else {
+			    	  acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
+			      }
+			      
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm, p.getUniqueId() });
 			      this.sendPacket(p, abPacket);
 		      } else {
@@ -149,7 +159,7 @@ public class NMS_ActionBar {
 		}, 10);
 	}
 	
-	private void updateToMC17Classes() {
+	private static void updateToMC17Classes() {
     	try {
     		packetClass = Class.forName("net.minecraft.network.protocol.Packet");
     		

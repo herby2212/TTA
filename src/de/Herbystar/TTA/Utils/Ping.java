@@ -2,21 +2,10 @@ package de.Herbystar.TTA.Utils;
 
 import java.lang.reflect.Field;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class Ping {
-	
-    public Class<?> getNMSClass(String name) {
-    	String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-    	try {
-			return Class.forName("org.bukkit.craftbukkit." + version + "." + name);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-    }
-    
+	    
     public Object getNMSPlayer(Player player) {
     	try {
     		return player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
@@ -29,7 +18,7 @@ public class Ping {
 	public int getPingV1(Player p) {
 		try {
 			int ping = 0;
-			Object o = getNMSClass("entity.CraftPlayer").cast(p);
+			Object o = Reflection.getCraftClass("entity.CraftPlayer").cast(p);
 			Object entityplayer = o.getClass().getMethod("getHandle", new Class[0]).invoke(o, new Object[0]);
 			Field f = entityplayer.getClass().getField("ping");
 			ping = (int) Math.round(f.getDouble(entityplayer));
@@ -45,7 +34,12 @@ public class Ping {
 		int ping = 0;
 		Object nmsPlayer = getNMSPlayer(p);
 		try {
-			Field f = nmsPlayer.getClass().getField("ping");
+			Field f;
+			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+				f = nmsPlayer.getClass().getField("e");
+			} else {
+				f = nmsPlayer.getClass().getField("ping");
+			}
 			f.setAccessible(true);
 			ping = f.getInt(nmsPlayer);
 			return ping;

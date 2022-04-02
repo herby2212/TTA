@@ -26,17 +26,16 @@ public class NMS_Title {
 	
     static {    
         try {
-        	
-        	packetClass = Reflection.getNMSClass("Packet");
-        	        	
-        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
-        	                    	
-        	packetPlayOutTitleClass = Reflection.getNMSClass("PacketPlayOutTitle");
-        	packetPlayOutTitleConstructorNormal = packetPlayOutTitleClass.getConstructor(new Class[] { packetPlayOutTitleClass.getDeclaredClasses()[0], iChatBaseComponentClass, Integer.TYPE, Integer.TYPE, Integer.TYPE });
-        	packetPlayOutTitleConstructorReduced = packetPlayOutTitleClass.getConstructor(new Class[] { packetPlayOutTitleClass.getDeclaredClasses()[0], iChatBaseComponentClass });
-        	
         	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
         		updateToMC17Classes();
+        	} else {
+            	packetClass = Reflection.getNMSClass("Packet");
+	        	
+            	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
+            	                    	
+            	packetPlayOutTitleClass = Reflection.getNMSClass("PacketPlayOutTitle");
+            	packetPlayOutTitleConstructorNormal = packetPlayOutTitleClass.getConstructor(new Class[] { packetPlayOutTitleClass.getDeclaredClasses()[0], iChatBaseComponentClass, Integer.TYPE, Integer.TYPE, Integer.TYPE });
+            	packetPlayOutTitleConstructorReduced = packetPlayOutTitleClass.getConstructor(new Class[] { packetPlayOutTitleClass.getDeclaredClasses()[0], iChatBaseComponentClass });
         	}
         } catch (NoSuchMethodException | SecurityException ex) {
             System.err.println("Error - Classes not initialized!");
@@ -47,12 +46,17 @@ public class NMS_Title {
 	private void sendPacket(Player player, Object packet) {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
-		    Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-		    playerConnection.getClass().getMethod("sendPacket", new Class[] { packetClass }).invoke(playerConnection, new Object[] { packet });
+			Object playerConnection;
+			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			    playerConnection = handle.getClass().getField("b").get(handle);
+			} else {
+			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
+			}
+		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}		
+	}	
 	
 	@SuppressWarnings("unused")
 	private Field getField(Class<?> clazz, String name) {

@@ -27,23 +27,23 @@ public class NMS_Tablist {
 	
     static {    
         try {
-        	
-        	packetClass = Reflection.getNMSClass("Packet");
+    		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+	    		  updateToMC17Classes();
+    		} else {
+            	packetClass = Reflection.getNMSClass("Packet");
 
-        	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
-        	chatComponentTextConstructor = chatComponentTextClass.getConstructor(new Class[] { String.class });
-        	        	
-        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
-        	                    	
-        	packetPlayOutPlayerListHeaderFooterClass = Reflection.getNMSClass("PacketPlayOutPlayerListHeaderFooter");
-        	packetPlayOutPlayerListHeaderFooterConstructor = packetPlayOutPlayerListHeaderFooterClass.getConstructor(new Class[] { iChatBaseComponentClass });
-        	
-        	if(TTA_BukkitVersion.getVersionAsInt(2) >= 112) {
-        		packetPlayOutPlayerListHeaderFooterConstructor = packetPlayOutPlayerListHeaderFooterClass.getConstructor(new Class[0]);
-        		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
-		    		  updateToMC17Classes();
-        		}
-        	}
+            	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
+            	chatComponentTextConstructor = chatComponentTextClass.getConstructor(new Class[] { String.class });
+            	        	
+            	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
+            	                    	
+            	packetPlayOutPlayerListHeaderFooterClass = Reflection.getNMSClass("PacketPlayOutPlayerListHeaderFooter");
+            	packetPlayOutPlayerListHeaderFooterConstructor = packetPlayOutPlayerListHeaderFooterClass.getConstructor(new Class[] { iChatBaseComponentClass });
+            	
+            	if(TTA_BukkitVersion.getVersionAsInt(2) >= 112) {
+            		packetPlayOutPlayerListHeaderFooterConstructor = packetPlayOutPlayerListHeaderFooterClass.getConstructor(new Class[0]);
+            	}
+    		}
         } catch (NoSuchMethodException | SecurityException ex) {
             System.err.println("Error - Classes not initialized!");
 			ex.printStackTrace();
@@ -53,8 +53,13 @@ public class NMS_Tablist {
 	private void sendPacket(Player player, Object packet) {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
-		    Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-		    playerConnection.getClass().getMethod("sendPacket", new Class[] { packetClass }).invoke(playerConnection, new Object[] { packet });
+			Object playerConnection;
+			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			    playerConnection = handle.getClass().getField("b").get(handle);
+			} else {
+			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
+			}
+		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

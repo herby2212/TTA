@@ -45,23 +45,24 @@ public class TTA_HoloAPI {
         version = path.substring(path.lastIndexOf(".")+1, path.length());
      
         try {
-        	craftChatMessageClass = Reflection.getCraftClass("util.CraftChatMessage");
-        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
-        	armorStandClass = Reflection.getNMSClass("EntityArmorStand");
-            worldClass = Reflection.getNMSClass("World");
-            entityClass = Reflection.getNMSClass("Entity");
-            craftWorldClass = Reflection.getCraftClass("CraftWorld");
-            packetPlayOutSpawnEntityLivingClass = Reflection.getNMSClass("PacketPlayOutSpawnEntityLiving");
-            entityLivingClass = Reflection.getNMSClass("EntityLiving");
-            packetPlayOutEntityDestroyClass = Reflection.getNMSClass("PacketPlayOutEntityDestroy");
-            packetPlayOutEntityDestroyConstructor = packetPlayOutEntityDestroyClass.getConstructor(int[].class);
-           
-            packetClass = Class.forName("net.minecraft.server." + version + ".Packet");
+        	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+        		updateToMC17Classes();
+        	} else {
+	        	craftChatMessageClass = Reflection.getCraftClass("util.CraftChatMessage");
+	        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
+	        	armorStandClass = Reflection.getNMSClass("EntityArmorStand");
+	            worldClass = Reflection.getNMSClass("World");
+	            entityClass = Reflection.getNMSClass("Entity");
+	            craftWorldClass = Reflection.getCraftClass("CraftWorld");
+	            packetPlayOutSpawnEntityLivingClass = Reflection.getNMSClass("PacketPlayOutSpawnEntityLiving");
+	            entityLivingClass = Reflection.getNMSClass("EntityLiving");
+	            packetPlayOutEntityDestroyClass = Reflection.getNMSClass("PacketPlayOutEntityDestroy");
+	            packetPlayOutEntityDestroyConstructor = packetPlayOutEntityDestroyClass.getConstructor(int[].class);
+	           
+	            packetClass = Class.forName("net.minecraft.server." + version + ".Packet");
+        	}
             //Currently error on 1.17 and prob. on 1.18?
             if(TTA_BukkitVersion.getVersionAsInt(2) >= 114) {
-            	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
-            		updateToMC17Classes();
-            	}
             	armorStandConstructor = armorStandClass.getConstructor(new Class[] { worldClass, double.class, double.class, double.class });
             } else {
             	armorStandConstructor = armorStandClass.getConstructor(new Class[] { worldClass });
@@ -169,8 +170,13 @@ public class TTA_HoloAPI {
     private void sendPacket(Player p, Object packet) {
         try {
            Method getHandle = p.getClass().getMethod("getHandle");
-           Object entityPlayer = getHandle.invoke(p);
-           Object pConnection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
+           Object entityPlayer = getHandle.invoke(p);        
+           Object pConnection;
+           if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+        	   pConnection = entityPlayer.getClass().getField("b").get(entityPlayer);
+			} else {
+				pConnection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
+			}
            Method sendMethod = pConnection.getClass().getMethod("sendPacket", new Class[] { packetClass });
            sendMethod.invoke(pConnection, new Object[] { packet });
         } catch (Exception e) {
