@@ -89,8 +89,11 @@ public class TTA_Methods {
 			m.sendSubTitle(p, subtitle);
 			
 		} else {
+			return;
+			/*
 			NMS_Title m = new NMS_Title(Main.instance);
 			m.sendTitle(p, title, fadeint, stayt, fadeoutt, subtitle, fadeinst, stayst, fadeoutst);
+			*/
 		}
 	}	
 	

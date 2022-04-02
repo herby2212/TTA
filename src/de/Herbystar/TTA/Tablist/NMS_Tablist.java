@@ -2,6 +2,7 @@ package de.Herbystar.TTA.Tablist;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+
 import org.bukkit.entity.Player;
 
 import de.Herbystar.TTA.Main;
@@ -38,10 +39,11 @@ public class NMS_Tablist {
             	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
             	                    	
             	packetPlayOutPlayerListHeaderFooterClass = Reflection.getNMSClass("PacketPlayOutPlayerListHeaderFooter");
-            	packetPlayOutPlayerListHeaderFooterConstructor = packetPlayOutPlayerListHeaderFooterClass.getConstructor(new Class[] { iChatBaseComponentClass });
             	
             	if(TTA_BukkitVersion.getVersionAsInt(2) >= 112) {
             		packetPlayOutPlayerListHeaderFooterConstructor = packetPlayOutPlayerListHeaderFooterClass.getConstructor(new Class[0]);
+            	} else {
+                	packetPlayOutPlayerListHeaderFooterConstructor = packetPlayOutPlayerListHeaderFooterClass.getConstructor(new Class[] { iChatBaseComponentClass });
             	}
     		}
         } catch (NoSuchMethodException | SecurityException ex) {

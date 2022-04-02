@@ -86,6 +86,7 @@ public class TTA_HoloAPI {
         for (int i = 0; i < lines.size(); i++) {
             Object packet = this.getPacket(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
             this.spawnCache.add(packet);
+            Bukkit.getConsoleSender().sendMessage("Packet created");
             try {
                 Field field = packetPlayOutSpawnEntityLivingClass.getDeclaredField("a");
                 field.setAccessible(true);
@@ -101,6 +102,7 @@ public class TTA_HoloAPI {
         for (int i = 0; i < spawnCache.size(); i++) {
             this.sendPacket(p, spawnCache.get(i));
         }
+        Bukkit.getConsoleSender().sendMessage("Packet send");
      
         this.players.add(p.getUniqueId());
         return true;
@@ -140,7 +142,7 @@ public class TTA_HoloAPI {
             Method setGravity = null;
             if(TTA_BukkitVersion.getVersionAsInt(2) >= 110) {
 	            setGravity = entityObject.getClass().getMethod("setNoGravity", new Class<?>[] { boolean.class });
-	            setGravity.invoke(entityObject, new Object[] { false });
+	            setGravity.invoke(entityObject, new Object[] { true });
 			} else {
 	            setGravity = entityObject.getClass().getMethod("setGravity", new Class<?>[] { boolean.class });
 	            setGravity.invoke(entityObject, new Object[] { false });
@@ -151,6 +153,7 @@ public class TTA_HoloAPI {
             setInvisible.invoke(entityObject, new Object[] { true });
             Constructor<?> cw = packetPlayOutSpawnEntityLivingClass.getConstructor(new Class<?>[] { entityLivingClass });
             Object packetObject = cw.newInstance(new Object[] { entityObject });
+            Bukkit.getConsoleSender().sendMessage("Packet created");
             return packetObject;
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
@@ -167,6 +170,7 @@ public class TTA_HoloAPI {
         return null;
     }
  
+    /*
     private void sendPacket(Player p, Object packet) {
         try {
            Method getHandle = p.getClass().getMethod("getHandle");
@@ -183,6 +187,21 @@ public class TTA_HoloAPI {
            e.printStackTrace();
         }
     }
+    */
+	private void sendPacket(Player player, Object packet) {
+		try {
+			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
+			Object playerConnection;
+			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			    playerConnection = handle.getClass().getField("b").get(handle);
+			} else {
+			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
+			}
+		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
     
     private static void updateToMC17Classes() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
     	packetClass = Class.forName("net.minecraft.network.protocol.Packet");
