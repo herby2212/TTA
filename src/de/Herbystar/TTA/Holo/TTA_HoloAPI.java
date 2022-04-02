@@ -11,6 +11,8 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import de.Herbystar.TTA.Utils.Reflection;
 import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
@@ -84,17 +86,21 @@ public class TTA_HoloAPI {
         // Init
         Location displayLoc = loc.clone().add(0, (ABS * lines.size()) - 1.97D, 0);
         for (int i = 0; i < lines.size(); i++) {
-            Object packet = this.getPacket(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
-            this.spawnCache.add(packet);
-            Bukkit.getConsoleSender().sendMessage("Packet created");
-            try {
-                Field field = packetPlayOutSpawnEntityLivingClass.getDeclaredField("a");
-                field.setAccessible(true);
-                this.destroyCache.add(this.getDestroyPacket(new int[] { (int) field.get(packet) }));
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            displayLoc.add(0, ABS * (-1), 0);
+        	if(TTA_BukkitVersion.getVersionAsInt(2) >= 115) {
+            	this.createLine(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
+            	displayLoc.add(0, ABS * (-1), 0);
+        	} else {
+                Object packet = this.getPacket(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
+                this.spawnCache.add(packet);
+                try {
+                    Field field = packetPlayOutSpawnEntityLivingClass.getDeclaredField("a");
+                    field.setAccessible(true);
+                    this.destroyCache.add(this.getDestroyPacket(new int[] { (int) field.get(packet) }));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                displayLoc.add(0, ABS * (-1), 0);
+        	}
         }
     }
  
@@ -102,7 +108,6 @@ public class TTA_HoloAPI {
         for (int i = 0; i < spawnCache.size(); i++) {
             this.sendPacket(p, spawnCache.get(i));
         }
-        Bukkit.getConsoleSender().sendMessage("Packet send");
      
         this.players.add(p.getUniqueId());
         return true;
@@ -118,7 +123,19 @@ public class TTA_HoloAPI {
         }
         return false;
     }
- 
+    
+    private void createLine(World w, double x, double y, double z, String text) {
+        ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, x, y, z), EntityType.ARMOR_STAND);
+        a.setVisible(false);
+        a.setCollidable(false);
+        a.setCustomNameVisible(true);
+        a.setGravity(false);
+        a.setInvulnerable(true);
+        a.setMarker(true);
+        
+        a.setCustomName(text);
+    }
+    
     private Object getPacket(World w, double x, double y, double z, String text) {
         try {
             Object craftWorldObj = craftWorldClass.cast(w);
@@ -142,7 +159,7 @@ public class TTA_HoloAPI {
             Method setGravity = null;
             if(TTA_BukkitVersion.getVersionAsInt(2) >= 110) {
 	            setGravity = entityObject.getClass().getMethod("setNoGravity", new Class<?>[] { boolean.class });
-	            setGravity.invoke(entityObject, new Object[] { true });
+	            setGravity.invoke(entityObject, new Object[] { false });
 			} else {
 	            setGravity = entityObject.getClass().getMethod("setGravity", new Class<?>[] { boolean.class });
 	            setGravity.invoke(entityObject, new Object[] { false });
@@ -150,11 +167,10 @@ public class TTA_HoloAPI {
             Method setLocation = entityObject.getClass().getMethod("setLocation", new Class<?>[] { double.class, double.class, double.class, float.class, float.class });
             setLocation.invoke(entityObject, new Object[] { x, y, z, 0.0F, 0.0F });
             Method setInvisible = entityObject.getClass().getMethod("setInvisible", new Class<?>[] { boolean.class });
-            setInvisible.invoke(entityObject, new Object[] { false });
+            setInvisible.invoke(entityObject, new Object[] { true });
             Constructor<?> cw = packetPlayOutSpawnEntityLivingClass.getConstructor(new Class<?>[] { entityLivingClass });
             Object packetObject = cw.newInstance(new Object[] { entityObject });
-            Bukkit.getConsoleSender().sendMessage("Packet created");
-            return packetObject;
+            return packetObject;         
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
