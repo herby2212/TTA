@@ -166,6 +166,5 @@ public class NMS_ActionBar {
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException ex) {
 			ex.printStackTrace();
 		}
-
 	}
 }
