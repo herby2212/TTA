@@ -3,10 +3,11 @@ package de.Herbystar.TTA.Title;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.Herbystar.TTA.Main;
+import de.Herbystar.TTA.Utils.Reflection;
+import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
 
 public class NMS_Title {
 	
@@ -15,26 +16,43 @@ public class NMS_Title {
 		plugin = main;
 	}
 	
+	private static Class<?> packetClass;
+			
+	private static Class<?> iChatBaseComponentClass;
+	
+	private static Class<?> packetPlayOutTitleClass;
+	private static Constructor<?> packetPlayOutTitleConstructorNormal;
+	private static Constructor<?> packetPlayOutTitleConstructorReduced;
+	
+    static {    
+        try {
+        	
+        	packetClass = Reflection.getNMSClass("Packet");
+        	        	
+        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
+        	                    	
+        	packetPlayOutTitleClass = Reflection.getNMSClass("PacketPlayOutTitle");
+        	packetPlayOutTitleConstructorNormal = packetPlayOutTitleClass.getConstructor(new Class[] { packetPlayOutTitleClass.getDeclaredClasses()[0], iChatBaseComponentClass, Integer.TYPE, Integer.TYPE, Integer.TYPE });
+        	packetPlayOutTitleConstructorReduced = packetPlayOutTitleClass.getConstructor(new Class[] { packetPlayOutTitleClass.getDeclaredClasses()[0], iChatBaseComponentClass });
+        	
+        	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+        		updateToMC17Classes();
+        	}
+        } catch (NoSuchMethodException | SecurityException ex) {
+            System.err.println("Error - Classes not initialized!");
+			ex.printStackTrace();
+        }
+    }
+	
 	private void sendPacket(Player player, Object packet) {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
 		    Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-		    playerConnection.getClass().getMethod("sendPacket", new Class[] { getNMSClass("Packet") }).invoke(playerConnection, new Object[] { packet });
+		    playerConnection.getClass().getMethod("sendPacket", new Class[] { packetClass }).invoke(playerConnection, new Object[] { packet });
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-	
-	private Class<?> getNMSClass(String class_name) {
-	    String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-	    try {
-	    	return Class.forName("net.minecraft.server." + version + "." + class_name);
-	    } catch (ClassNotFoundException ex) {
-	    	ex.printStackTrace();
-	    }
-	    return null;
-	}
-		
+	}		
 	
 	@SuppressWarnings("unused")
 	private Field getField(Class<?> clazz, String name) {
@@ -55,36 +73,49 @@ public class NMS_Title {
 		if(subtitle == null) {
 			subtitle = "";
 		}
-		
+		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+    		return;
+    	}
 		try {
 			if(title != null) {
-		        Object e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get((Object)null);
-		        Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + title + "\"}" });
-		        Constructor<?> subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[] { getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE });
-		        Object titlePacket = subtitleConstructor.newInstance(new Object[] { e, chatTitle, fadeint, stayt, fadeoutt });
+		        Object e = packetPlayOutTitleClass.getDeclaredClasses()[0].getField("TIMES").get((Object)null);
+		        Object chatTitle = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + title + "\"}" });
+		        Object titlePacket = packetPlayOutTitleConstructorNormal.newInstance(new Object[] { e, chatTitle, fadeint, stayt, fadeoutt });
 		        this.sendPacket(p, titlePacket);
 
-		        e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get((Object)null);
-		        chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + title + "\"}" });
-		        subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[] { getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent") });
-		        titlePacket = subtitleConstructor.newInstance(new Object[] { e, chatTitle });
+		        e = packetPlayOutTitleClass.getDeclaredClasses()[0].getField("TITLE").get((Object)null);
+		        chatTitle = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + title + "\"}" });
+		        titlePacket = packetPlayOutTitleConstructorReduced.newInstance(new Object[] { e, chatTitle });
 		        this.sendPacket(p, titlePacket);
 			}
 			
 			if(subtitle != null) {
-		        Object e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get((Object)null);
-		        Object chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + title + "\"}" });
-		        Constructor<?> subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[] { getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE });
-		        Object subtitlePacket = subtitleConstructor.newInstance(new Object[] { e, chatSubtitle, fadeinst, stayst, fadeoutst });
+		        Object e = packetPlayOutTitleClass.getDeclaredClasses()[0].getField("TIMES").get((Object)null);
+		        Object chatSubtitle = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + title + "\"}" });
+		        Object subtitlePacket = packetPlayOutTitleConstructorNormal.newInstance(new Object[] { e, chatSubtitle, fadeinst, stayst, fadeoutst });
 		        sendPacket(p, subtitlePacket);
 
-		        e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get((Object)null);
-		        chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + subtitle + "\"}" });
-		        subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[] { getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE });
-		        subtitlePacket = subtitleConstructor.newInstance(new Object[] { e, chatSubtitle, fadeinst, stayst, fadeoutst });
+		        e = packetPlayOutTitleClass.getDeclaredClasses()[0].getField("SUBTITLE").get((Object)null);
+		        chatSubtitle = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + subtitle + "\"}" });
+		        subtitlePacket = packetPlayOutTitleConstructorNormal.newInstance(new Object[] { e, chatSubtitle, fadeinst, stayst, fadeoutst });
 		        sendPacket(p, subtitlePacket);
 			}	
 		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private static void updateToMC17Classes() {
+    	try {
+    		packetClass = Class.forName("net.minecraft.network.protocol.Packet");
+    						    	
+	    	iChatBaseComponentClass = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
+
+	    	//TODO packetPlayOutTitleClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutTitle"); - Class is missing?
+        	packetPlayOutTitleConstructorNormal = packetPlayOutTitleClass.getConstructor(new Class[] { packetPlayOutTitleClass.getDeclaredClasses()[0], iChatBaseComponentClass, Integer.TYPE, Integer.TYPE, Integer.TYPE });
+        	packetPlayOutTitleConstructorReduced = packetPlayOutTitleClass.getConstructor(new Class[] { packetPlayOutTitleClass.getDeclaredClasses()[0], iChatBaseComponentClass });
+
+		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException ex) {
 			ex.printStackTrace();
 		}
 	}
