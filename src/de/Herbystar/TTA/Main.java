@@ -182,6 +182,10 @@ public class Main extends JavaPlugin {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.16 Support §2enabled!");
 			return;
 		}
+		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.17 Support §2enabled!");
+			return;
+		}
 		
 		this.unsupportedVersion = true;
 	}
@@ -242,8 +246,6 @@ public class Main extends JavaPlugin {
 		}
 		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.9", "1.10", "1.11", "1.12"), 2)) {
 			supMethods.remove("setBossBar");
-			supMethods.remove("hasBossBar");
-			supMethods.remove("removeBossBar");
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");
 			supMethods.add("sendTitle");
@@ -262,13 +264,10 @@ public class Main extends JavaPlugin {
 			supMethods.add("addBarFlag");
 			supMethods.add("setBarVisibility");
 			supMethods.add("removeBarFlag");
-			supMethods.add("removeBossBar");
 			supMethods.add("GetSoundByName");
 		}	
 		if(TTA_BukkitVersion.isVersion("1.13", 2)) {
 			supMethods.remove("setBossBar");
-			supMethods.remove("hasBossBar");
-			supMethods.remove("removeBossBar");
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");
 			supMethods.add("sendTitle");
@@ -283,20 +282,16 @@ public class Main extends JavaPlugin {
 			supMethods.add("addBarFlag");
 			supMethods.add("setBarVisibility");
 			supMethods.add("removeBarFlag");
-			supMethods.add("removeBossBar");
 			supMethods.add("GetSoundByName");
 			supMethods.add("createHolo");
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
 		}
-		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.14", "1.15", "1.16"), 2)) {
+		if(TTA_BukkitVersion.isVersion("1.14", 2)) {
 			supMethods.remove("setBossBar");
-			supMethods.remove("hasBossBar");
-			supMethods.remove("removeBossBar");
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");
 			supMethods.add("sendTitle");
-			supMethods.add("spawnHead");
 			supMethods.add("createBossBar");
 			supMethods.add("setBarTitle");
 			supMethods.add("setBarProgress");
@@ -305,11 +300,25 @@ public class Main extends JavaPlugin {
 			supMethods.add("addBarFlag");
 			supMethods.add("setBarVisibility");
 			supMethods.add("removeBarFlag");
-			supMethods.add("removeBossBar");
 			supMethods.add("GetSoundByName");
 			supMethods.add("createHolo");
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
+		}
+		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.15", "1.16", "1.17"), 2)) {
+			supMethods.remove("setBossBar");
+			supMethods.add("sendTablist");
+			supMethods.add("sendActionBar");
+			supMethods.add("sendTitle");
+			supMethods.add("createBossBar");
+			supMethods.add("setBarTitle");
+			supMethods.add("setBarProgress");
+			supMethods.add("setBarColor");
+			supMethods.add("setBarStyle");
+			supMethods.add("addBarFlag");
+			supMethods.add("setBarVisibility");
+			supMethods.add("removeBarFlag");
+			supMethods.add("GetSoundByName");
 		}
 		for(String method : supMethods) {
 			Bukkit.getConsoleSender().sendMessage(method);
