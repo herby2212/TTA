@@ -287,12 +287,11 @@ public class Main extends JavaPlugin {
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
 		}
-		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.14", "1.15", "1.16"), 2)) {
+		if(TTA_BukkitVersion.isVersion("1.14", 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");
 			supMethods.add("sendTitle");
-			supMethods.add("spawnHead");
 			supMethods.add("createBossBar");
 			supMethods.add("setBarTitle");
 			supMethods.add("setBarProgress");
@@ -306,10 +305,11 @@ public class Main extends JavaPlugin {
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
 		}
-		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.15", "1.16", "1.17"), 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");
+			supMethods.add("sendTitle");
 			supMethods.add("createBossBar");
 			supMethods.add("setBarTitle");
 			supMethods.add("setBarProgress");

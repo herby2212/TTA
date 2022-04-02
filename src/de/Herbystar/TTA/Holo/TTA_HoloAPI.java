@@ -126,7 +126,8 @@ public class TTA_HoloAPI {
         return false;
     }
     
-    private void createLine(World w, double x, double y, double z, String text) {
+    @SuppressWarnings("unused")
+	private void createLine(World w, double x, double y, double z, String text) {
         ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, x, y, z), EntityType.ARMOR_STAND);
         a.setVisible(false);
         a.setCollidable(false);
