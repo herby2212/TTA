@@ -63,7 +63,6 @@ public class TTA_HoloAPI {
 	           
 	            packetClass = Class.forName("net.minecraft.server." + version + ".Packet");
         	}
-            //Currently error on 1.17 and prob. on 1.18?
             if(TTA_BukkitVersion.getVersionAsInt(2) >= 114) {
             	armorStandConstructor = armorStandClass.getConstructor(new Class[] { worldClass, double.class, double.class, double.class });
             } else {
@@ -87,8 +86,11 @@ public class TTA_HoloAPI {
         Location displayLoc = loc.clone().add(0, (ABS * lines.size()) - 1.97D, 0);
         for (int i = 0; i < lines.size(); i++) {
         	if(TTA_BukkitVersion.getVersionAsInt(2) >= 115) {
+        		return;
+        		/*
             	this.createLine(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
             	displayLoc.add(0, ABS * (-1), 0);
+            	*/
         	} else {
                 Object packet = this.getPacket(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
                 this.spawnCache.add(packet);
