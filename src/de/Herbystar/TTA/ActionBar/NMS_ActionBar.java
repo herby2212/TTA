@@ -23,14 +23,14 @@ public class NMS_ActionBar {
 	private static Class<?> packetClass;
 	
 	private static Class<?> chatComponentTextClass;
-	private static Constructor<?> chatComponentTextConstructorClass;
+	private static Constructor<?> chatComponentTextConstructor;
 	
 	private static Class<?> chatMessageTypeClass;
 	
 	private static Class<?> iChatBaseComponentClass;
 	
 	private static Class<?> packetPlayOutChatClass;
-	private static Constructor<?> packetPlayOutChatConstructorClass;
+	private static Constructor<?> packetPlayOutChatConstructor;
 	
     static {    
         try {
@@ -38,14 +38,14 @@ public class NMS_ActionBar {
         	packetClass = Reflection.getNMSClass("Packet");
 
         	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
-        	chatComponentTextConstructorClass = chatComponentTextClass.getConstructor(String.class);
+        	chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
         	
         	chatMessageTypeClass = Reflection.getNMSClass("ChatMessageType");
         	
         	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
         	                    	
         	packetPlayOutChatClass = Reflection.getNMSClass("PacketPlayOutChat");
-        	packetPlayOutChatConstructorClass = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass);
+        	packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass);
 
         } catch (NoSuchMethodException | SecurityException ex) {
             System.err.println("Error - Classes not initialized!");
@@ -69,27 +69,27 @@ public class NMS_ActionBar {
 		}		
 		try {
 			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.12", "1.13", "1.14", "1.15"), 2)) {
-			      Object ab = chatComponentTextConstructorClass.newInstance(new Object[] { msg });
+			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
-			      Object abPacket = packetPlayOutChatConstructorClass.newInstance(new Object[] { ab, acm });
+			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm });
 			      this.sendPacket(p, abPacket);
 		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 116) {
-		    	  packetPlayOutChatConstructorClass = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass, UUID.class);
+		    	  packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass, UUID.class);
 		    	  
 		    	  //1.17 Support
 		    	  if(TTA_BukkitVersion.isVersion("1.17", 2)) {
 		    		  this.updateToMC17Classes();
 		    	  }
 		    	  
-			      Object ab = chatComponentTextConstructorClass.newInstance(new Object[] { msg });
+			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
-			      Object abPacket = packetPlayOutChatConstructorClass.newInstance(new Object[] { ab, acm, p.getUniqueId() });
+			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm, p.getUniqueId() });
 			      this.sendPacket(p, abPacket);
 		      } else {
-		    	  packetPlayOutChatConstructorClass = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, Byte.TYPE);
+		    	  packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, Byte.TYPE);
 		    	  
-			      Object ab = chatComponentTextConstructorClass.newInstance(new Object[] { msg });
-			      Object abPacket = packetPlayOutChatConstructorClass.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
+			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
+			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
 			      this.sendPacket(p, abPacket);
 		      }
 		} catch (Exception ex) {
@@ -105,10 +105,10 @@ public class NMS_ActionBar {
 		}
 		
 		try {
-			packetPlayOutChatConstructorClass = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, Byte.TYPE);
+			packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, Byte.TYPE);
 			
-			Object ab = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class}).invoke(null, new Object[] { "{\"text\": \"" + msg + "\"}" });
-			Object Abpacket = packetPlayOutChatConstructorClass.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
+			Object ab = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke(null, new Object[] { "{\"text\": \"" + msg + "\"}" });
+			Object Abpacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
 			this.sendPacket(p, Abpacket);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -154,14 +154,14 @@ public class NMS_ActionBar {
     		packetClass = Class.forName("net.minecraft.network.protocol.Packet");
     		
     		chatComponentTextClass = Class.forName("net.minecraft.network.chat.ChatComponentText");
-			chatComponentTextConstructorClass = chatComponentTextClass.getConstructor(String.class);
+			chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
 			
 	    	chatMessageTypeClass = Class.forName("net.minecraft.network.chat.ChatMessageType");
 	    	
 	    	iChatBaseComponentClass = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
 
 	    	packetPlayOutChatClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutChat");
-	    	packetPlayOutChatConstructorClass = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass, UUID.class);
+	    	packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass, UUID.class);
 
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException ex) {
 			ex.printStackTrace();

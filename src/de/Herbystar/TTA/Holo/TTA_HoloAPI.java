@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,18 +26,18 @@ public class TTA_HoloAPI {
     private static final double ABS = 0.23D;
     private static String path;
     private static String version;
-    private static Class<?> IChatBaseComponent;
-    private static Class<?> CraftChatMessage;
-    private static Class<?> armorStand;
+    private static Class<?> iChatBaseComponentClass;
+    private static Class<?> craftChatMessageClass;
+    private static Class<?> armorStandClass;
     private static Class<?> worldClass;
-    private static Class<?> nmsEntity;
-    private static Class<?> craftWorld;
-    private static Class<?> packetClass;
+    private static Class<?> entityClass;
+    private static Class<?> craftWorldClass;
+    private static Class<?> packetPlayOutSpawnEntityLivingClass;
     private static Class<?> entityLivingClass;
     private static Constructor<?> armorStandConstructor;
-    private static Class<?> destroyPacketClass;
-    private static Constructor<?> destroyPacketConstructor;
-    private static Class<?> nmsPacket;
+    private static Class<?> packetPlayOutEntityDestroyClass;
+    private static Constructor<?> packetPlayOutEntityDestroyConstructor;
+    private static Class<?> packetClass;
  
  
     static {
@@ -46,26 +45,27 @@ public class TTA_HoloAPI {
         version = path.substring(path.lastIndexOf(".")+1, path.length());
      
         try {
-        	CraftChatMessage = Reflection.getCraftClass("util.CraftChatMessage");
-        	IChatBaseComponent = Class.forName("net.minecraft.server." + version + ".IChatBaseComponent");
-            armorStand = Class.forName("net.minecraft.server." + version + ".EntityArmorStand");
-            worldClass = Class.forName("net.minecraft.server." + version + ".World");
-            nmsEntity = Class.forName("net.minecraft.server." + version + ".Entity");
-            craftWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
-            packetClass = Class.forName("net.minecraft.server." + version + ".PacketPlayOutSpawnEntityLiving");
-            entityLivingClass = Class.forName("net.minecraft.server." + version + ".EntityLiving");
-            //Currently error on 1.17 and prob. on 1.18
-            if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.14", "1.15", "1.16"), 2)) {
-            	armorStandConstructor = armorStand.getConstructor(new Class[] { worldClass, double.class, double.class, double.class });
-            } else {
-            	armorStandConstructor = armorStand.getConstructor(new Class[] { worldClass });
-            }
-            
-         
-            destroyPacketClass = Class.forName("net.minecraft.server." + version + ".PacketPlayOutEntityDestroy");
-            destroyPacketConstructor = destroyPacketClass.getConstructor(int[].class);
+        	craftChatMessageClass = Reflection.getCraftClass("util.CraftChatMessage");
+        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
+        	armorStandClass = Reflection.getNMSClass("EntityArmorStand");
+            worldClass = Reflection.getNMSClass("World");
+            entityClass = Reflection.getNMSClass("Entity");
+            craftWorldClass = Reflection.getCraftClass("CraftWorld");
+            packetPlayOutSpawnEntityLivingClass = Reflection.getNMSClass("PacketPlayOutSpawnEntityLiving");
+            entityLivingClass = Reflection.getNMSClass("EntityLiving");
+            packetPlayOutEntityDestroyClass = Reflection.getNMSClass("PacketPlayOutEntityDestroy");
+            packetPlayOutEntityDestroyConstructor = packetPlayOutEntityDestroyClass.getConstructor(int[].class);
            
-            nmsPacket = Class.forName("net.minecraft.server." + version + ".Packet");
+            packetClass = Class.forName("net.minecraft.server." + version + ".Packet");
+            //Currently error on 1.17 and prob. on 1.18?
+            if(TTA_BukkitVersion.getVersionAsInt(2) >= 114) {
+            	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+            		updateToMC17Classes();
+            	}
+            	armorStandConstructor = armorStandClass.getConstructor(new Class[] { worldClass, double.class, double.class, double.class });
+            } else {
+            	armorStandConstructor = armorStandClass.getConstructor(new Class[] { worldClass });
+            }
         } catch (ClassNotFoundException | NoSuchMethodException | SecurityException ex) {
             System.err.println("Error - Classes not initialized!");
             System.err.println("Hologramm is not supported in 1.7!");
@@ -86,7 +86,7 @@ public class TTA_HoloAPI {
             Object packet = this.getPacket(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
             this.spawnCache.add(packet);
             try {
-                Field field = packetClass.getDeclaredField("a");
+                Field field = packetPlayOutSpawnEntityLivingClass.getDeclaredField("a");
                 field.setAccessible(true);
                 this.destroyCache.add(this.getDestroyPacket(new int[] { (int) field.get(packet) }));
             } catch (Exception ex) {
@@ -118,7 +118,7 @@ public class TTA_HoloAPI {
  
     private Object getPacket(World w, double x, double y, double z, String text) {
         try {
-            Object craftWorldObj = craftWorld.cast(w);
+            Object craftWorldObj = craftWorldClass.cast(w);
             Method getHandleMethod = craftWorldObj.getClass().getMethod("getHandle", new Class<?>[0]);
             Object entityObject = null;
             if(TTA_BukkitVersion.getVersionAsInt(2) >= 114) {
@@ -127,14 +127,14 @@ public class TTA_HoloAPI {
                 entityObject = armorStandConstructor.newInstance(new Object[] { getHandleMethod.invoke(craftWorldObj, new Object[0]) });
             }
             if(TTA_BukkitVersion.getVersionAsInt(2) >= 113) {
-                Method setCustomName = entityObject.getClass().getMethod("setCustomName", new Class<?>[] { IChatBaseComponent });
-                Method fromStringOrNull = CraftChatMessage.getMethod("fromStringOrNull", new Class[] { String.class });
-                setCustomName.invoke(entityObject, fromStringOrNull.invoke(CraftChatMessage, new Object[] {text}));
+                Method setCustomName = entityObject.getClass().getMethod("setCustomName", new Class<?>[] { iChatBaseComponentClass });
+                Method fromStringOrNull = craftChatMessageClass.getMethod("fromStringOrNull", new Class[] { String.class });
+                setCustomName.invoke(entityObject, fromStringOrNull.invoke(craftChatMessageClass, new Object[] {text}));
             } else {
                 Method setCustomName = entityObject.getClass().getMethod("setCustomName", new Class<?>[] { String.class });
                 setCustomName.invoke(entityObject, new Object[] { text });
             }
-            Method setCustomNameVisible = nmsEntity.getMethod("setCustomNameVisible", new Class[] { boolean.class });
+            Method setCustomNameVisible = entityClass.getMethod("setCustomNameVisible", new Class[] { boolean.class });
             setCustomNameVisible.invoke(entityObject, new Object[] { true });
             Method setGravity = null;
             if(TTA_BukkitVersion.getVersionAsInt(2) >= 110) {
@@ -148,7 +148,7 @@ public class TTA_HoloAPI {
             setLocation.invoke(entityObject, new Object[] { x, y, z, 0.0F, 0.0F });
             Method setInvisible = entityObject.getClass().getMethod("setInvisible", new Class<?>[] { boolean.class });
             setInvisible.invoke(entityObject, new Object[] { true });
-            Constructor<?> cw = packetClass.getConstructor(new Class<?>[] { entityLivingClass });
+            Constructor<?> cw = packetPlayOutSpawnEntityLivingClass.getConstructor(new Class<?>[] { entityLivingClass });
             Object packetObject = cw.newInstance(new Object[] { entityObject });
             return packetObject;
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -159,7 +159,7 @@ public class TTA_HoloAPI {
    
     private Object getDestroyPacket(int... id) {
         try {
-            return destroyPacketConstructor.newInstance(id);
+            return packetPlayOutEntityDestroyConstructor.newInstance(id);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -171,12 +171,26 @@ public class TTA_HoloAPI {
            Method getHandle = p.getClass().getMethod("getHandle");
            Object entityPlayer = getHandle.invoke(p);
            Object pConnection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
-           Method sendMethod = pConnection.getClass().getMethod("sendPacket", new Class[] { nmsPacket });
+           Method sendMethod = pConnection.getClass().getMethod("sendPacket", new Class[] { packetClass });
            sendMethod.invoke(pConnection, new Object[] { packet });
         } catch (Exception e) {
            e.printStackTrace();
         }
-     }
+    }
+    
+    private static void updateToMC17Classes() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+    	packetClass = Class.forName("net.minecraft.network.protocol.Packet");
+    	craftChatMessageClass = Reflection.getCraftClass("util.CraftChatMessage");
+    	iChatBaseComponentClass = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
+        armorStandClass = Class.forName("net.minecraft.world.entity.decoration.EntityArmorStand");
+        worldClass = Class.forName("net.minecraft.world.level.World");
+        entityClass = Class.forName("net.minecraft.world.entity.Entity");
+        craftWorldClass = Reflection.getCraftClass("CraftWorld");
+        packetPlayOutSpawnEntityLivingClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving");
+        entityLivingClass = Class.forName("net.minecraft.world.entity.EntityLiving");
+        packetPlayOutEntityDestroyClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy");
+        packetPlayOutEntityDestroyConstructor = packetPlayOutEntityDestroyClass.getConstructor(int[].class);
+    }
     
     
     /*
