@@ -48,7 +48,13 @@ public class NMS_ActionBar {
 	        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
 	        	                    	
 	        	packetPlayOutChatClass = Reflection.getNMSClass("PacketPlayOutChat");
-	        	packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass);
+	        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.12", "1.13", "1.14", "1.15"), 2)) {
+	        		packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass);
+	        	} else if(TTA_BukkitVersion.isVersion("1.16", 2)) {
+	        		packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass, UUID.class);
+	        	} else {
+	        		packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, Byte.TYPE);
+	        	}
 
 	    	}
         } catch (NoSuchMethodException | SecurityException ex) {
@@ -82,9 +88,7 @@ public class NMS_ActionBar {
 			      Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm });
 			      this.sendPacket(p, abPacket);
-		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 116) {
-		    	  packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass, UUID.class);
-		    	  		    	  
+		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 116) {		    	  		    	  
 			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object acm;
 			      if(TTA_BukkitVersion.isVersion("1.17", 2)) {
@@ -95,9 +99,7 @@ public class NMS_ActionBar {
 			      
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm, p.getUniqueId() });
 			      this.sendPacket(p, abPacket);
-		      } else {
-		    	  packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, Byte.TYPE);
-		    	  
+		      } else {  	  
 			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
 			      this.sendPacket(p, abPacket);
@@ -115,8 +117,6 @@ public class NMS_ActionBar {
 		}
 		
 		try {
-			packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, Byte.TYPE);
-			
 			Object ab = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke(null, new Object[] { "{\"text\": \"" + msg + "\"}" });
 			Object Abpacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
 			this.sendPacket(p, Abpacket);

@@ -150,7 +150,7 @@ public class TTA_HoloAPI {
             Method setLocation = entityObject.getClass().getMethod("setLocation", new Class<?>[] { double.class, double.class, double.class, float.class, float.class });
             setLocation.invoke(entityObject, new Object[] { x, y, z, 0.0F, 0.0F });
             Method setInvisible = entityObject.getClass().getMethod("setInvisible", new Class<?>[] { boolean.class });
-            setInvisible.invoke(entityObject, new Object[] { true });
+            setInvisible.invoke(entityObject, new Object[] { false });
             Constructor<?> cw = packetPlayOutSpawnEntityLivingClass.getConstructor(new Class<?>[] { entityLivingClass });
             Object packetObject = cw.newInstance(new Object[] { entityObject });
             Bukkit.getConsoleSender().sendMessage("Packet created");
