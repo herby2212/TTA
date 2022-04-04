@@ -70,7 +70,8 @@ public class Main extends JavaPlugin {
 		loadConfig();
 		activateGlow();
 		GlowColor.initializeColorScoreboard();
-		startScoreboards();
+		startScoreboardsTitle();
+//		startScoreboardsContent();
 		/**
 		 * Disabled as there is no updater currently included
 		registerEvents();
@@ -114,7 +115,19 @@ public class Main extends JavaPlugin {
 		}.runTaskTimer(this, 0, 40);
 	}
 	
-	public void startScoreboards() {
+	public void startScoreboardsTitle() {
+		Main.scoreboardtitle = new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				for(Scoreboards p : boards.values()) {
+					p.updateTitle();
+				}
+			}
+		}.runTaskTimerAsynchronously(this, 0, scoreboardtitleinterval);	
+	}
+	
+	public void startScoreboardsContent() {
 		Main.scoreboardcontent = new BukkitRunnable() {
 			
 			@Override
@@ -131,16 +144,6 @@ public class Main extends JavaPlugin {
 
 			}
 		}.runTaskTimerAsynchronously(this, 0, scoreboardcontentinterval);
-		
-		Main.scoreboardtitle = new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				for(Scoreboards p : boards.values()) {
-					p.updateTitle();
-				}
-			}
-		}.runTaskTimerAsynchronously(this, 0, scoreboardtitleinterval);	
 	}
 		
 	public int getVersionNumber(String version) {

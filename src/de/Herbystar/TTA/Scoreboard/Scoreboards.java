@@ -35,7 +35,7 @@ public class Scoreboards {
 	private int maxchars = 32;
 	public String replacer;
 	
-	public Scoreboards(Player player, List<String> content, List<String> headerContent) {
+	public Scoreboards(Player player, List<String> headerContent, List<String> content) {
 		/*
 		for(String s : content) {
 			this.content.add(s);
@@ -136,7 +136,10 @@ public class Scoreboards {
 	}
 	
 	public void updateTitleData(List<String> newTitle) {
-		
+		Main.scoreboardtitle.cancel();
+		this.title = newTitle;
+		this.titleindex = 0;
+		Main.instance.startScoreboardsTitle();
 	}
 	
 	public void updateTitle() {

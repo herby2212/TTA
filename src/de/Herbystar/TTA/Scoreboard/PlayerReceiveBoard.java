@@ -22,7 +22,7 @@ public class PlayerReceiveBoard extends Event implements Cancellable {
 		this.title = title;
 		this.scoreboard = scoreboard;
 	}
-	
+
 	public Player getPlayer() {
 		return this.player;
 	}
