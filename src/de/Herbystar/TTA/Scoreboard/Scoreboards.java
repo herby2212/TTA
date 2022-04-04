@@ -152,9 +152,14 @@ public class Scoreboards {
 	}
 	
 	public void updateRow(int row, String content) {
-		Team t = this.teams.get(row);
-		int i = 15-row;
-		this.updateRow(t, i, content);
+		try {
+			Team t = this.teams.get(row);
+			int i = 15-row;
+			this.updateRow(t, i, content);
+		} catch(IndexOutOfBoundsException ex) {
+			Bukkit.getConsoleSender().sendMessage(Main.instance.prefix + "§cRow update failed.");
+			Bukkit.getConsoleSender().sendMessage(Main.instance.prefix + "§cRow §6" + row + " §cdoes not exists on scoreboard.");
+		}
 	}
 	
 	private void updateRow(Team t, int i, String content) {
