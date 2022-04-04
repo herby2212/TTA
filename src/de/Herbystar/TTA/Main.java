@@ -3,6 +3,7 @@ package de.Herbystar.TTA;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -13,11 +14,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Team;
 
 import de.Herbystar.TTA.Events.PlayerJoinEventHandler;
 import de.Herbystar.TTA.Glow.GlowColor;
 import de.Herbystar.TTA.Glow.ItemEnchant;
+import de.Herbystar.TTA.Scoreboard.TTA_Scoreboards;
 import de.Herbystar.TTA.BossBar.NMS_BossBar;
 import de.Herbystar.TTA.Utils.TPS;
 import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
@@ -30,8 +33,21 @@ public class Main extends JavaPlugin {
 	public boolean UpdateAviable;
 	public static Main instance;
 	private boolean unsupportedVersion = false;
+	public boolean internalDebug = false;
 	public Team black;
 	public HashMap<UUID, List<Object>> bossBarUpdater = new HashMap<UUID, List<Object>>();
+	
+	/**
+	 * Scoreboard
+	 */
+	public static BukkitTask scoreboardcontent;
+	public static BukkitTask scoreboardtitle;
+	
+	private int scoreboardcontentinterval = 20;
+	private int scoreboardtitleinterval = 10;
+	public static HashMap<Player, TTA_Scoreboards> boards = new HashMap<Player, TTA_Scoreboards>();
+	public static List<TTA_Scoreboards> allboards = new ArrayList<TTA_Scoreboards>();
+
 	
 	public void onEnable() {
 		instance = this;
@@ -54,6 +70,8 @@ public class Main extends JavaPlugin {
 		loadConfig();
 		activateGlow();
 		GlowColor.initializeColorScoreboard();
+		startScoreboardsTitle();
+//		startScoreboardsContent();
 		/**
 		 * Disabled as there is no updater currently included
 		registerEvents();
@@ -95,6 +113,37 @@ public class Main extends JavaPlugin {
 				}
 			}
 		}.runTaskTimer(this, 0, 40);
+	}
+	
+	public void startScoreboardsTitle() {
+		Main.scoreboardtitle = new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				for(TTA_Scoreboards p : boards.values()) {
+					p.updateTitle();
+				}
+			}
+		}.runTaskTimerAsynchronously(this, 0, scoreboardtitleinterval);	
+	}
+	
+	public void startScoreboardsContent() {
+		Main.scoreboardcontent = new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				try {
+					for(TTA_Scoreboards p : boards.values()) {
+						p.updateContent(null);
+					}
+				} catch(ConcurrentModificationException ex) {
+					if(Main.instance.internalDebug == true) {
+						ex.printStackTrace();
+					}
+				}
+
+			}
+		}.runTaskTimerAsynchronously(this, 0, scoreboardcontentinterval);
 	}
 		
 	public int getVersionNumber(String version) {
@@ -184,6 +233,10 @@ public class Main extends JavaPlugin {
 		}
 		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.17 Support §2enabled!");
+			return;
+		}
+		if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.18 Support §2enabled!");
 			return;
 		}
 		
@@ -305,7 +358,7 @@ public class Main extends JavaPlugin {
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
 		}
-		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.15", "1.16", "1.17"), 2)) {
+		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.15", "1.16", "1.17", "1.18"), 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");

@@ -40,4 +40,14 @@ public class ItemEnchant extends Enchantment {
 		return 1;
 	}
 
+	public boolean isCursed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isTreasure() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

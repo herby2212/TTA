@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,16 +40,14 @@ public class TTA_HoloAPI {
     private static Constructor<?> armorStandConstructor;
     private static Class<?> packetPlayOutEntityDestroyClass;
     private static Constructor<?> packetPlayOutEntityDestroyConstructor;
-    private static Class<?> packetClass;
- 
  
     static {
         path = Bukkit.getServer().getClass().getPackage().getName();
         version = path.substring(path.lastIndexOf(".")+1, path.length());
      
         try {
-        	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
-        		updateToMC17Classes();
+        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
+        		updateToNewClassStructure();
         	} else {
 	        	craftChatMessageClass = Reflection.getCraftClass("util.CraftChatMessage");
 	        	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
@@ -60,8 +59,6 @@ public class TTA_HoloAPI {
 	            entityLivingClass = Reflection.getNMSClass("EntityLiving");
 	            packetPlayOutEntityDestroyClass = Reflection.getNMSClass("PacketPlayOutEntityDestroy");
 	            packetPlayOutEntityDestroyConstructor = packetPlayOutEntityDestroyClass.getConstructor(int[].class);
-	           
-	            packetClass = Class.forName("net.minecraft.server." + version + ".Packet");
         	}
             if(TTA_BukkitVersion.getVersionAsInt(2) >= 114) {
             	armorStandConstructor = armorStandClass.getConstructor(new Class[] { worldClass, double.class, double.class, double.class });
@@ -108,7 +105,7 @@ public class TTA_HoloAPI {
  
     public boolean displayHolo(Player p) {
         for (int i = 0; i < spawnCache.size(); i++) {
-            this.sendPacket(p, spawnCache.get(i));
+        	Reflection.sendPacket(p, spawnCache.get(i));
         }
      
         this.players.add(p.getUniqueId());
@@ -118,7 +115,7 @@ public class TTA_HoloAPI {
     public boolean destroyHolo(Player p) {
         if (this.players.contains(p.getUniqueId())) {
             for (int i = 0; i < this.destroyCache.size(); i++) {
-                this.sendPacket(p, this.destroyCache.get(i));
+                Reflection.sendPacket(p, this.destroyCache.get(i));
             }
             this.players.remove(p.getUniqueId());
             return true;
@@ -207,23 +204,8 @@ public class TTA_HoloAPI {
         }
     }
     */
-	private void sendPacket(Player player, Object packet) {
-		try {
-			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
-			Object playerConnection;
-			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
-			    playerConnection = handle.getClass().getField("b").get(handle);
-			} else {
-			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
-			}
-		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
     
-    private static void updateToMC17Classes() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
-    	packetClass = Class.forName("net.minecraft.network.protocol.Packet");
+    private static void updateToNewClassStructure() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
     	craftChatMessageClass = Reflection.getCraftClass("util.CraftChatMessage");
     	iChatBaseComponentClass = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
         armorStandClass = Class.forName("net.minecraft.world.entity.decoration.EntityArmorStand");
