@@ -14,9 +14,9 @@ public class PlayerReceiveBoard extends Event implements Cancellable {
 	private Player player;
 	private List<String> content;
 	private List<String> title;
-	private Scoreboards scoreboard;
+	private TTA_Scoreboards scoreboard;
 	
-	public PlayerReceiveBoard(Player player, List<String> content, List<String> title, Scoreboards scoreboard) {
+	public PlayerReceiveBoard(Player player, List<String> content, List<String> title, TTA_Scoreboards scoreboard) {
 		this.player = player;
 		this.content = content;
 		this.title = title;
@@ -35,7 +35,7 @@ public class PlayerReceiveBoard extends Event implements Cancellable {
 		return this.title;
 	}
 	
-	public Scoreboards getBoard() {
+	public TTA_Scoreboards getBoard() {
 		return this.scoreboard;
 	}
 	
@@ -49,7 +49,7 @@ public class PlayerReceiveBoard extends Event implements Cancellable {
 		return title;
 	}
 	
-	public Scoreboards setBoard(Scoreboards board) {
+	public TTA_Scoreboards setBoard(TTA_Scoreboards board) {
 		this.scoreboard = board;
 		return board;
 	}

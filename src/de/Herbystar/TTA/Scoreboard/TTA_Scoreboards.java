@@ -17,7 +17,7 @@ import com.google.common.base.Splitter;
 
 import de.Herbystar.TTA.Main;
 
-public class Scoreboards {
+public class TTA_Scoreboards {
 	
 	public Scoreboard board;
 	public Objective score;
@@ -34,7 +34,7 @@ public class Scoreboards {
 	private int maxchars = 32;
 	public String replacer;
 	
-	public Scoreboards(Player player, List<String> headerContent, List<String> content) {
+	public TTA_Scoreboards(Player player, List<String> headerContent, List<String> content) {
 		this.title = headerContent;
 		this.content = content;
 		PlayerReceiveBoard e = new PlayerReceiveBoard(this.player, this.content, this.title, this);
@@ -43,7 +43,7 @@ public class Scoreboards {
 			lines();
 			
 			if(Main.boards.containsKey(this.player)) {
-				((Scoreboards)Main.boards.get(this.player)).remove();
+				((TTA_Scoreboards)Main.boards.get(this.player)).remove();
 			}
 			
 			this.titleindex = e.getTitle().size();
@@ -198,8 +198,14 @@ public class Scoreboards {
 			t.setPrefix(s);
 		}
 	}
-		
-	public void updateContent() {
+	
+	public void updateContent(List<String> rowContents) {
+		if(content == null) {
+			updateContent();
+		}
+	}
+	
+	private void updateContent() {
 		try {
 			int i = 15;
 			for(Team t : this.teams) {

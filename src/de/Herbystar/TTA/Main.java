@@ -20,7 +20,7 @@ import org.bukkit.scoreboard.Team;
 import de.Herbystar.TTA.Events.PlayerJoinEventHandler;
 import de.Herbystar.TTA.Glow.GlowColor;
 import de.Herbystar.TTA.Glow.ItemEnchant;
-import de.Herbystar.TTA.Scoreboard.Scoreboards;
+import de.Herbystar.TTA.Scoreboard.TTA_Scoreboards;
 import de.Herbystar.TTA.BossBar.NMS_BossBar;
 import de.Herbystar.TTA.Utils.TPS;
 import de.Herbystar.TTA.Utils.TTA_BukkitVersion;
@@ -45,8 +45,8 @@ public class Main extends JavaPlugin {
 	
 	private int scoreboardcontentinterval = 20;
 	private int scoreboardtitleinterval = 10;
-	public static HashMap<Player, Scoreboards> boards = new HashMap<Player, Scoreboards>();
-	public static List<Scoreboards> allboards = new ArrayList<Scoreboards>();
+	public static HashMap<Player, TTA_Scoreboards> boards = new HashMap<Player, TTA_Scoreboards>();
+	public static List<TTA_Scoreboards> allboards = new ArrayList<TTA_Scoreboards>();
 
 	
 	public void onEnable() {
@@ -120,7 +120,7 @@ public class Main extends JavaPlugin {
 			
 			@Override
 			public void run() {
-				for(Scoreboards p : boards.values()) {
+				for(TTA_Scoreboards p : boards.values()) {
 					p.updateTitle();
 				}
 			}
@@ -133,8 +133,8 @@ public class Main extends JavaPlugin {
 			@Override
 			public void run() {
 				try {
-					for(Scoreboards p : boards.values()) {
-						p.updateContent();
+					for(TTA_Scoreboards p : boards.values()) {
+						p.updateContent(null);
 					}
 				} catch(ConcurrentModificationException ex) {
 					if(Main.instance.internalDebug == true) {
