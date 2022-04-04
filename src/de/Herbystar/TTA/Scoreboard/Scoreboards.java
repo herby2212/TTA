@@ -24,7 +24,6 @@ public class Scoreboards {
 	public Player player;
 	public List<Team> teams = new ArrayList<Team>();
 	public HashMap<Team, String> lot = new HashMap<Team, String>();
-//	public HashMap<Team, String> compare = new HashMap<Team, String>();
 	public List<String> content = new ArrayList<String>();
 	public List<String> title = new ArrayList<String>();
 	public List<String> chlist = new ArrayList<String>();
@@ -36,14 +35,6 @@ public class Scoreboards {
 	public String replacer;
 	
 	public Scoreboards(Player player, List<String> headerContent, List<String> content) {
-		/*
-		for(String s : content) {
-			this.content.add(s);
-		}
-		for(String s : headerContent) {
-			this.title.add(s);
-		}
-		*/
 		this.title = headerContent;
 		this.content = content;
 		PlayerReceiveBoard e = new PlayerReceiveBoard(this.player, this.content, this.title, this);
@@ -70,8 +61,6 @@ public class Scoreboards {
 				Team t = this.board.registerNewTeam("Team:" + this.index);
 				String o = s;
 				String n = "";
-//				s = ReplaceString.replaceString(s, this.player);
-//				this.compare.put(t, s);
 				s = this.check(s);
 				if(s.length() > 16) {
 			        Iterator<String> iterator = this.Splitter(s);
@@ -143,21 +132,14 @@ public class Scoreboards {
 	}
 	
 	public void updateTitle() {
+		if(this.title.size() == 0) {
+			Main.scoreboardtitle.cancel();
+			return;
+		}
 		if(this.titleindex > this.title.size() - 1) {
 			this.titleindex = 0;
 		}
 		String s = this.title.get(this.titleindex);
-		/*
-		final String buffer = s;
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				replacer = ReplaceString.replaceString(buffer, player);		
-			}			
-		}.runTask(MainOld.instance);
-		s = replacer;
-		*/
 		if(s == null) {
 			return;
 		}
@@ -169,17 +151,25 @@ public class Scoreboards {
 		
 	}
 	
-	private void updateRow(int row) {
-		this.updateRow(row, null);
-	}
-	
 	public void updateRow(int row, String content) {
 		Team t = this.teams.get(row);
-		
+		int i = 15-row;
+		this.updateRow(t, i, content);
+	}
+	
+	private void updateRow(Team t, int i, String content) {
 		String n = "";
 		String s = (String)this.lot.get(t);
+		String score = "";
+		//Compares row values
 		if(content != null) {
-			if(!s.equals(content)) {
+			if(s.equals(content)) {
+				return;
+			} else {
+				//Clears old row if longer then 16 chars
+				if(s.length() > 16) {
+					this.refreshScores(i, score, t);
+				}
 				s = content;
 				this.lot.put(t, content);
 			}
@@ -187,19 +177,6 @@ public class Scoreboards {
 		if(Main.instance.internalDebug == true) {
 			Bukkit.getConsoleSender().sendMessage("ContentBeforeReplace: " + s);
 		}
-//		s = ReplaceString.replaceString(s, this.player);
-//		String compare = (String) this.compare.get(t);
-		/*
-		if(Main.instance.internalDebug == true) {
-			Bukkit.getConsoleSender().sendMessage("ContentAfterReplace: " + s);
-			Bukkit.getConsoleSender().sendMessage("CompareString" + compare);
-			Bukkit.getConsoleSender().sendMessage("CompareEquals: " + s.equals(compare));
-		}
-		
-		if(s.equals(compare)) {
-			continue;
-		}
-		*/
 		if(s.length() > 16) {
 	        Iterator<String> iterator = this.Splitter(s);
 	        String prefix = iterator.next();
@@ -209,8 +186,9 @@ public class Scoreboards {
 				Bukkit.getConsoleSender().sendMessage("n: " + n);
 			}
 			this.SuffixController(iterator, prefix, s.length(), t);
-			String score = n + (String)this.chlist.get(row - 1);
-			this.refreshScores(row, score, t);
+			score = n + (String)this.chlist.get(i - 1);
+			Bukkit.getConsoleSender().sendMessage("Refresh scores  i: " + i + " - Score: " + score + " - t: " + t);
+			this.refreshScores(i, score, t);
 		} else {
 			t.setPrefix(s);
 		}
@@ -221,7 +199,7 @@ public class Scoreboards {
 			int i = 15;
 			for(Team t : this.teams) {
 				Bukkit.getConsoleSender().sendMessage("Team Index: " + this.teams.indexOf(t) + " - i: " + i);
-				this.updateRow(i);
+				this.updateRow(t, i, null);
 				
 				if(Main.instance.internalDebug == true) {
 					Bukkit.getConsoleSender().sendMessage(this.player.getName());
