@@ -19,7 +19,7 @@ public class PlayerJoinEventHandler implements Listener {
 		Player p = e.getPlayer();
 		if(p.isOp()) {
 			if(plugin.UpdateAviable == true) {
-				p.sendMessage(plugin.prefix + "§a-=> Update is available! <=-");
+//				p.sendMessage(plugin.prefix + "§a-=> Update is available! <=-");
 			}
 		}
 	}

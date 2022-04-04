@@ -25,4 +25,4 @@ The classes, like listed below, both include **features** and useful functions t
 
 Each class has its own **detailed wiki entry** which lists functions and examples of usage.
 
-**Link to the wiki:** https://github.com/herby2212/TTA
+**Link to the wiki:** https://github.com/herby2212/TTA/wiki
