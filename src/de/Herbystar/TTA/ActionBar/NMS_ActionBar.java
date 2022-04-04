@@ -1,6 +1,7 @@
 package de.Herbystar.TTA.ActionBar;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
@@ -34,8 +35,8 @@ public class NMS_ActionBar {
 	
     static {    
         try {
-        	//1.17 Support
-	    	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+        	//1.17 & 1.18 Support
+	    	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 	    		updateToMC17Classes();
 	    	} else {
 	        	packetClass = Reflection.getNMSClass("Packet");
@@ -67,12 +68,18 @@ public class NMS_ActionBar {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
 			Object playerConnection;
-			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 			    playerConnection = handle.getClass().getField("b").get(handle);
 			} else {
 			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
 			}
-		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
+			Method sPacket;
+			if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+				sPacket = playerConnection.getClass().getMethod("a", packetClass);
+			} else {
+				sPacket = playerConnection.getClass().getMethod("sendPacket", packetClass);
+			}
+			sPacket.invoke(playerConnection, new Object[] { packet });
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -81,17 +88,18 @@ public class NMS_ActionBar {
 	public void sendActionBar(Player p, String msg) {
 		if(msg == null) {
 			msg = "";
-		}		
+		}
+		
 		try {
 			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.12", "1.13", "1.14", "1.15"), 2)) {
 			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm });
 			      this.sendPacket(p, abPacket);
-		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 116) {		    	  		    	  
+		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 116) {    	  		    	  
 			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object acm;
-			      if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			      if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 			    	  acm = chatMessageTypeClass.getField("c").get(null);
 			      } else {
 			    	  acm = chatMessageTypeClass.getField("GAME_INFO").get(null);

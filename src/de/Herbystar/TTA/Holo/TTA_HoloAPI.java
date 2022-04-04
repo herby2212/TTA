@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,7 +48,7 @@ public class TTA_HoloAPI {
         version = path.substring(path.lastIndexOf(".")+1, path.length());
      
         try {
-        	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
         		updateToMC17Classes();
         	} else {
 	        	craftChatMessageClass = Reflection.getCraftClass("util.CraftChatMessage");
@@ -211,12 +212,18 @@ public class TTA_HoloAPI {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
 			Object playerConnection;
-			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 			    playerConnection = handle.getClass().getField("b").get(handle);
 			} else {
 			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
 			}
-		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
+			Method sPacket;
+			if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+				sPacket = playerConnection.getClass().getMethod("a", packetClass);
+			} else {
+				sPacket = playerConnection.getClass().getMethod("sendPacket", packetClass);
+			}
+			sPacket.invoke(playerConnection, new Object[] { packet });
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

@@ -1,6 +1,7 @@
 package de.Herbystar.TTA.Utils;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import org.bukkit.entity.Player;
 
@@ -35,7 +36,7 @@ public class Ping {
 		Object nmsPlayer = getNMSPlayer(p);
 		try {
 			Field f;
-			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 				f = nmsPlayer.getClass().getField("e");
 			} else {
 				f = nmsPlayer.getClass().getField("ping");

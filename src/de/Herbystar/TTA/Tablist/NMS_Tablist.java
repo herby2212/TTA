@@ -2,7 +2,10 @@ package de.Herbystar.TTA.Tablist;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.Herbystar.TTA.Main;
@@ -28,7 +31,7 @@ public class NMS_Tablist {
 	
     static {    
         try {
-    		if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 	    		  updateToMC17Classes();
     		} else {
             	packetClass = Reflection.getNMSClass("Packet");
@@ -56,12 +59,18 @@ public class NMS_Tablist {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
 			Object playerConnection;
-			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 			    playerConnection = handle.getClass().getField("b").get(handle);
 			} else {
 			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
 			}
-		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
+			Method sPacket;
+			if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+				sPacket = playerConnection.getClass().getMethod("a", packetClass);
+			} else {
+				sPacket = playerConnection.getClass().getMethod("sendPacket", packetClass);
+			}
+			sPacket.invoke(playerConnection, new Object[] { packet });
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

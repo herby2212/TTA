@@ -2,6 +2,8 @@ package de.Herbystar.TTA.Title;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.bukkit.entity.Player;
 
@@ -35,7 +37,7 @@ public class NMS_Title {
 	
     static {    
         try {
-        	if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
         		updateToMC17Classes();
         	} else {
             	packetClass = Reflection.getNMSClass("Packet");
@@ -56,16 +58,22 @@ public class NMS_Title {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
 			Object playerConnection;
-			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 			    playerConnection = handle.getClass().getField("b").get(handle);
 			} else {
 			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
 			}
-		    playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, new Object[] { packet });
+			Method sPacket;
+			if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+				sPacket = playerConnection.getClass().getMethod("a", packetClass);
+			} else {
+				sPacket = playerConnection.getClass().getMethod("sendPacket", packetClass);
+			}
+			sPacket.invoke(playerConnection, new Object[] { packet });
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}	
+	}
 	
 	@SuppressWarnings("unused")
 	private Field getField(Class<?> clazz, String name) {
@@ -90,7 +98,7 @@ public class NMS_Title {
 			Object chatTitle = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + title + "\"}" });
 			Object chatSubtitle = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + subtitle + "\"}" });       
 		
-			if(TTA_BukkitVersion.isVersion("1.17", 2)) {
+			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 	    		if(title != null) {
 	    			Object timesPacket = clientboundSetTitlesAnimationPacketConstructor.newInstance(new Object[] {fadeint, stayt, fadeoutt});
 	    			this.sendPacket(p, timesPacket);

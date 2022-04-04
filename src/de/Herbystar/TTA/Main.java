@@ -235,6 +235,10 @@ public class Main extends JavaPlugin {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.17 Support §2enabled!");
 			return;
 		}
+		if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.18 Support §2enabled!");
+			return;
+		}
 		
 		this.unsupportedVersion = true;
 	}
