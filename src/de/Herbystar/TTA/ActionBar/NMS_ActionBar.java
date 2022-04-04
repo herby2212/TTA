@@ -1,7 +1,6 @@
 package de.Herbystar.TTA.ActionBar;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
@@ -21,8 +20,6 @@ public class NMS_ActionBar {
 		
 	final static HashMap<UUID, Integer> Count = new HashMap<UUID, Integer>();
 	
-	private static Class<?> packetClass;
-	
 	private static Class<?> chatComponentTextClass;
 	private static Constructor<?> chatComponentTextConstructor;
 	
@@ -33,14 +30,15 @@ public class NMS_ActionBar {
 	private static Class<?> packetPlayOutChatClass;
 	private static Constructor<?> packetPlayOutChatConstructor;
 	
+	private static Class<?> clientboundSetActionBarTextPacketClass;
+	private static Constructor<?> clientboundSetActionBarTextPacketConstructor;
+	
     static {    
         try {
         	//1.17 & 1.18 Support
 	    	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
-	    		updateToMC17Classes();
+	    		updateToNewClassStructure();
 	    	} else {
-	        	packetClass = Reflection.getNMSClass("Packet");
-
 	        	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
 	        	chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
 	        	
@@ -63,27 +61,6 @@ public class NMS_ActionBar {
 			ex.printStackTrace();
         }
     }
-			
-	private void sendPacket(Player player, Object packet) {
-		try {
-			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
-			Object playerConnection;
-			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
-			    playerConnection = handle.getClass().getField("b").get(handle);
-			} else {
-			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
-			}
-			Method sPacket;
-			if(TTA_BukkitVersion.isVersion("1.18", 2)) {
-				sPacket = playerConnection.getClass().getMethod("a", packetClass);
-			} else {
-				sPacket = playerConnection.getClass().getMethod("sendPacket", packetClass);
-			}
-			sPacket.invoke(playerConnection, new Object[] { packet });
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
 	
 	public void sendActionBar(Player p, String msg) {
 		if(msg == null) {
@@ -91,26 +68,22 @@ public class NMS_ActionBar {
 		}
 		
 		try {
+			Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.12", "1.13", "1.14", "1.15"), 2)) {
-			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
+			      
 			      Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm });
-			      this.sendPacket(p, abPacket);
-		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 116) {    	  		    	  
-			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
-			      Object acm;
-			      if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
-			    	  acm = chatMessageTypeClass.getField("c").get(null);
-			      } else {
-			    	  acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
-			      }
-			      
-			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm, p.getUniqueId() });
-			      this.sendPacket(p, abPacket);
+			      Reflection.sendPacket(p, abPacket);
+			  } else if(TTA_BukkitVersion.isVersion("1.16", 2)) {
+				  Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
+				  Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm, p.getUniqueId() });
+			      Reflection.sendPacket(p, abPacket);
+		      } else if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
+			      Object abPacket = clientboundSetActionBarTextPacketConstructor.newInstance(new Object[] { ab });
+			      Reflection.sendPacket(p, abPacket);
 		      } else {  	  
-			      Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
-			      this.sendPacket(p, abPacket);
+			      Reflection.sendPacket(p, abPacket);
 		      }
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -127,7 +100,7 @@ public class NMS_ActionBar {
 		try {
 			Object ab = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke(null, new Object[] { "{\"text\": \"" + msg + "\"}" });
 			Object Abpacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
-			this.sendPacket(p, Abpacket);
+			Reflection.sendPacket(p, Abpacket);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -167,10 +140,8 @@ public class NMS_ActionBar {
 		}, 10);
 	}
 	
-	private static void updateToMC17Classes() {
+	private static void updateToNewClassStructure() {
     	try {
-    		packetClass = Class.forName("net.minecraft.network.protocol.Packet");
-    		
     		chatComponentTextClass = Class.forName("net.minecraft.network.chat.ChatComponentText");
 			chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
 			
@@ -180,7 +151,9 @@ public class NMS_ActionBar {
 
 	    	packetPlayOutChatClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutChat");
 	    	packetPlayOutChatConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass, UUID.class);
-
+	    	
+	    	clientboundSetActionBarTextPacketClass = Class.forName("net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket");
+	    	clientboundSetActionBarTextPacketConstructor = clientboundSetActionBarTextPacketClass.getConstructor(iChatBaseComponentClass);
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException ex) {
 			ex.printStackTrace();
 		}

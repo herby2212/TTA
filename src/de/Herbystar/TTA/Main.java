@@ -358,7 +358,7 @@ public class Main extends JavaPlugin {
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
 		}
-		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.15", "1.16", "1.17"), 2)) {
+		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.15", "1.16", "1.17", "1.18"), 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");

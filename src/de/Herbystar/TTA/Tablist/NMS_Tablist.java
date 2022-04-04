@@ -19,8 +19,6 @@ public class NMS_Tablist {
 		plugin = main;
 	}
 
-	private static Class<?> packetClass;
-	
 	private static Class<?> chatComponentTextClass;
 	private static Constructor<?> chatComponentTextConstructor;
 		
@@ -32,10 +30,8 @@ public class NMS_Tablist {
     static {    
         try {
         	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
-	    		  updateToMC17Classes();
+        		updateToNewClassStructure();
     		} else {
-            	packetClass = Reflection.getNMSClass("Packet");
-
             	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
             	chatComponentTextConstructor = chatComponentTextClass.getConstructor(new Class[] { String.class });
             	        	
@@ -55,27 +51,6 @@ public class NMS_Tablist {
         }
     }
 	
-	private void sendPacket(Player player, Object packet) {
-		try {
-			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
-			Object playerConnection;
-			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
-			    playerConnection = handle.getClass().getField("b").get(handle);
-			} else {
-			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
-			}
-			Method sPacket;
-			if(TTA_BukkitVersion.isVersion("1.18", 2)) {
-				sPacket = playerConnection.getClass().getMethod("a", packetClass);
-			} else {
-				sPacket = playerConnection.getClass().getMethod("sendPacket", packetClass);
-			}
-			sPacket.invoke(playerConnection, new Object[] { packet });
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-		
 	public void sendTablist(Player p, String header, String footer) {
 		if(header == null) {
 			header = "";
@@ -103,13 +78,13 @@ public class NMS_Tablist {
 			    fa.set(THpacket, tabheader);
 				fb.setAccessible(true);
 				fb.set(THpacket, tabfooter);
-				this.sendPacket(p, THpacket);
+				Reflection.sendPacket(p, THpacket);
 			} else if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
 				Object tabheader = chatComponentTextConstructor.newInstance(new Object[] { header });
 			    Object tabfooter = chatComponentTextConstructor.newInstance(new Object[] { footer });
 			    
 			    Object THpacket = packetPlayOutPlayerListHeaderFooterConstructor.newInstance(new Object[] { tabheader, tabfooter });
-				this.sendPacket(p, THpacket);
+			    Reflection.sendPacket(p, THpacket);
 			} else {
 			    Object tabheader = chatComponentTextConstructor.newInstance(new Object[] { header });
 			    Object tabfooter = chatComponentTextConstructor.newInstance(new Object[] { footer });
@@ -117,7 +92,7 @@ public class NMS_Tablist {
 				Field f = THpacket.getClass().getDeclaredField("b");
 				f.setAccessible(true);
 				f.set(THpacket, tabfooter);
-				this.sendPacket(p, THpacket);
+				Reflection.sendPacket(p, THpacket);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -140,16 +115,14 @@ public class NMS_Tablist {
 			Field f = THpacket.getClass().getDeclaredField("b");
 			f.setAccessible(true);
 			f.set(THpacket, tabfooter);
-			this.sendPacket(p, THpacket);
+			Reflection.sendPacket(p, THpacket);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void updateToMC17Classes() {
+	private static void updateToNewClassStructure() {
     	try {
-    		packetClass = Class.forName("net.minecraft.network.protocol.Packet");
-    		
     		chatComponentTextClass = Class.forName("net.minecraft.network.chat.ChatComponentText");
 			chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
 				    	

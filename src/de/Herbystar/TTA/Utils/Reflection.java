@@ -3,6 +3,7 @@ package de.Herbystar.TTA.Utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -10,6 +11,21 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class Reflection {
+	
+	private static Class<?> packetClass;
+	
+	static {    
+        try {
+        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
+        		packetClass = Class.forName("net.minecraft.network.protocol.Packet");
+        	} else {
+            	packetClass = getNMSClass("Packet");
+        	}
+        } catch (SecurityException | ClassNotFoundException ex) {
+            System.err.println("Error - Classes not initialized!");
+			ex.printStackTrace();
+        }
+    }
 	
 	/*
 	 * get a class from net.minecraft.server
@@ -63,6 +79,27 @@ public class Reflection {
             sendPacket(p , packet);
         }
     }
+    
+    public static void sendPacket(Player player, Object packet) {
+		try {
+			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
+			Object playerConnection;
+			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
+			    playerConnection = handle.getClass().getField("b").get(handle);
+			} else {
+			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
+			}
+			Method sPacket;
+			if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+				sPacket = playerConnection.getClass().getMethod("a", packetClass);
+			} else {
+				sPacket = playerConnection.getClass().getMethod("sendPacket", packetClass);
+			}
+			sPacket.invoke(playerConnection, new Object[] { packet });
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
    
     /*
      * sender a package to a player
@@ -70,6 +107,7 @@ public class Reflection {
      * @p: the player you want to send it to
      * @packet: the packet you want to send
      */
+    /*
     public static void sendPacket(Player p, Object packet) {
         try {
         	// get EntityPlayer
@@ -87,6 +125,7 @@ public class Reflection {
         	e.printStackTrace();
         }
     }
+    */
    
     /*
      * get the entity nms class
