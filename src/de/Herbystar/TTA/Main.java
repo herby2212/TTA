@@ -373,6 +373,17 @@ public class Main extends JavaPlugin {
 			supMethods.add("removeBarFlag");
 			supMethods.add("GetSoundByName");
 		}
+		if(TTA_BukkitVersion.getVersionAsInt(2) > 18) {
+			supMethods.add("*Scoreboard Methods*");
+			supMethods.add("getPlayer");
+			supMethods.add("updateTitle");
+			supMethods.add("updateTitleData");
+			supMethods.add("updateRow");
+			supMethods.add("updateContent");
+			supMethods.add("remove");
+			supMethods.add("getScoreboards");
+			supMethods.add("getScoreboardByPlayer");
+		}
 		for(String method : supMethods) {
 			Bukkit.getConsoleSender().sendMessage(method);
 		}

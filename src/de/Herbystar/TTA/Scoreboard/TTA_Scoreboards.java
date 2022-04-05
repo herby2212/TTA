@@ -205,7 +205,7 @@ public class TTA_Scoreboards {
 	}
 	
 	public void updateContent(List<String> rowContents) {
-		if(content == null) {
+		if(rowContents == null) {
 			updateContent();
 		}
 		for(String content : rowContents) {
