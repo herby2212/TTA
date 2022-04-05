@@ -1,6 +1,7 @@
 package de.Herbystar.TTA.Scoreboard;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -124,6 +125,10 @@ public class TTA_Scoreboards {
 		
 	}
 	
+	public Player getPlayer() {
+		return this.player;
+	}
+	
 	public void updateTitleData(List<String> newTitle) {
 		Main.scoreboardtitle.cancel();
 		this.title = newTitle;
@@ -203,6 +208,9 @@ public class TTA_Scoreboards {
 		if(content == null) {
 			updateContent();
 		}
+		for(String content : rowContents) {
+			updateRow(rowContents.indexOf(content), content);
+		}
 	}
 	
 	private void updateContent() {
@@ -263,5 +271,19 @@ public class TTA_Scoreboards {
 		this.scores.remove(scoreCount);
 		this.score.getScore(score).setScore(scoreCount);
 		this.scores.put(scoreCount, score);
+	}
+	
+	/**
+	 * Getter
+	 */
+	public static TTA_Scoreboards getScoreboardByPlayer(Player player) {
+		if(Main.boards.containsKey(player)) {
+			return Main.boards.get(player);
+		}
+		return null;
+	}
+	
+	public static Collection<TTA_Scoreboards> getScoreboards() {
+		return Main.boards.values();
 	}
 }
