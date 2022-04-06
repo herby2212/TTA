@@ -52,8 +52,14 @@ public class TTA_Scoreboards {
 			Main.allboards.add(this);
 			this.player = player;
 			//Check for existing scoreboards
-//			if(player.getScoreboard().getObjective(DisplaySlot.SIDEBAR))
-			this.board = Bukkit.getScoreboardManager().getNewScoreboard();
+			if(player.getScoreboard() == null) {
+				this.board = Bukkit.getScoreboardManager().getNewScoreboard();
+				Bukkit.getConsoleSender().sendMessage("Existing scoreboard");
+			} else {
+				Bukkit.getConsoleSender().sendMessage("New scoreboard");
+				this.board = player.getScoreboard();
+				this.board.clearSlot(DisplaySlot.SIDEBAR);
+			}
 			this.score = this.board.registerNewObjective("score", "dummy");
 			this.score.setDisplaySlot(DisplaySlot.SIDEBAR);
 			this.score.setDisplayName((String)e.getTitle().get(0));
@@ -123,6 +129,14 @@ public class TTA_Scoreboards {
 			}
 		}
 		
+	}
+	
+	public void hide() {
+		this.player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+	}
+
+	public void show() {
+		this.player.setScoreboard(board);
 	}
 	
 	public Player getPlayer() {
