@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -29,7 +30,7 @@ public class NMS_Tablist {
 	
     static {    
         try {
-        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18", "1.19"), 2)) {
+        	if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
         		updateToNewClassStructure();
     		} else {
             	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
@@ -79,11 +80,19 @@ public class NMS_Tablist {
 				fb.setAccessible(true);
 				fb.set(THpacket, tabfooter);
 				Reflection.sendPacket(p, THpacket);
-			} else if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
+			} else if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 				Object tabheader = chatComponentTextConstructor.newInstance(new Object[] { header });
 			    Object tabfooter = chatComponentTextConstructor.newInstance(new Object[] { footer });
 			    
 			    Object THpacket = packetPlayOutPlayerListHeaderFooterConstructor.newInstance(new Object[] { tabheader, tabfooter });
+			    Reflection.sendPacket(p, THpacket);
+			} else if(TTA_BukkitVersion.isVersion("1.19", 2)) {
+				Object tabheader = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class })
+		    			  .invoke((Object)null, new Object[] { "{\"text\":\"" + header + "\"}" });
+				Object tabfooter = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class })
+		    			  .invoke((Object)null, new Object[] { "{\"text\":\"" + footer + "\"}" });
+				
+				Object THpacket = packetPlayOutPlayerListHeaderFooterConstructor.newInstance(new Object[] { tabheader, tabfooter });
 			    Reflection.sendPacket(p, THpacket);
 			} else {
 			    Object tabheader = chatComponentTextConstructor.newInstance(new Object[] { header });
@@ -123,8 +132,10 @@ public class NMS_Tablist {
 	
 	private static void updateToNewClassStructure() {
     	try {
-    		chatComponentTextClass = Class.forName("net.minecraft.network.chat.ChatComponentText");
-			chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
+    		if(TTA_BukkitVersion.getVersionAsInt(2) < 119) {
+        		chatComponentTextClass = Class.forName("net.minecraft.network.chat.ChatComponentText");
+    			chatComponentTextConstructor = chatComponentTextClass.getConstructor(String.class);
+    		}
 				    	
 	    	iChatBaseComponentClass = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
 

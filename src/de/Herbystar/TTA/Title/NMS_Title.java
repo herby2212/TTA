@@ -2,8 +2,6 @@ package de.Herbystar.TTA.Title;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-
 import org.bukkit.entity.Player;
 
 import de.Herbystar.TTA.Main;
@@ -33,7 +31,7 @@ public class NMS_Title {
 	
     static {    
         try {
-        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18", "1.19"), 2)) {
+        	if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
         		updateToNewClassStructure();
         	} else {
             	iChatBaseComponentClass = Reflection.getNMSClass("IChatBaseComponent");
@@ -60,6 +58,20 @@ public class NMS_Title {
 		}
 	}
 	
+	/**
+	 * 
+	 * Sends the player a title and subtitle with the given timings.
+	 * 
+	 * @param p
+	 * @param title
+	 * @param fadeint
+	 * @param stayt
+	 * @param fadeoutt
+	 * @param subtitle
+	 * @param fadeinst
+	 * @param stayst
+	 * @param fadeoutst
+	 */
 	public void sendTitle(Player p, String title, int fadeint, int stayt, int fadeoutt, String subtitle, int fadeinst, int stayst, int fadeoutst) {
 		if(title == null) {
 			title = "";
@@ -71,8 +83,8 @@ public class NMS_Title {
 			Object chatTitle = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + title + "\"}" });
 			Object chatSubtitle = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class }).invoke((Object)null, new Object[] { "{\"text\":\"" + subtitle + "\"}" });       
 		
-			//Not tested for > 1.18 as player "sendTitle" method of player object is used
-			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18", "1.19"), 2)) {
+			
+        	if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
 	    		if(title != null) {
 	    			Object timesPacket = clientboundSetTitlesAnimationPacketConstructor.newInstance(new Object[] {fadeint, stayt, fadeoutt});
 	    			Reflection.sendPacket(p, timesPacket);

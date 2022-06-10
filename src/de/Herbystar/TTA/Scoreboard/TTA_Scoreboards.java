@@ -52,20 +52,33 @@ public class TTA_Scoreboards {
 			Main.allboards.add(this);
 			this.player = player;
 			//Check for existing scoreboards
+			String scoreboardExists;
 			if(player.getScoreboard() == null) {
 				this.board = Bukkit.getScoreboardManager().getNewScoreboard();
-				Bukkit.getConsoleSender().sendMessage("Existing scoreboard");
+				scoreboardExists = "New scoreboard";
 			} else {
-				Bukkit.getConsoleSender().sendMessage("New scoreboard");
+				scoreboardExists = "Existing scoreboard";
 				this.board = player.getScoreboard();
-				this.board.clearSlot(DisplaySlot.SIDEBAR);
+				if(this.board.getObjective(DisplaySlot.SIDEBAR) != null) {
+					this.board.getObjective(DisplaySlot.SIDEBAR).unregister();
+					this.board.clearSlot(DisplaySlot.SIDEBAR);
+				}
 			}
+			if(Main.instance.internalDebug == true) {
+				Bukkit.getConsoleSender().sendMessage(scoreboardExists);
+			}
+			
 			this.score = this.board.registerNewObjective("score", "dummy");
 			this.score.setDisplaySlot(DisplaySlot.SIDEBAR);
 			this.score.setDisplayName((String)e.getTitle().get(0));
 			
 			for(String s : e.getContent()) {
-				Team t = this.board.registerNewTeam("Team:" + this.index);
+				Team t;
+				if(this.board.getTeam("Team:" + this.index) == null) {
+					t = this.board.registerNewTeam("Team:" + this.index);
+				} else {
+					t = this.board.getTeam("Team:" + this.index);
+				}
 				String o = s;
 				String n = "";
 				s = this.check(s);

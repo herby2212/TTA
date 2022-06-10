@@ -1,8 +1,6 @@
 package de.Herbystar.TTA.Utils;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-
 import org.bukkit.entity.Player;
 
 public class Ping {
@@ -16,10 +14,16 @@ public class Ping {
     	return null;
     }
     
-	public int getPingV1(Player p) {
+    /**
+     * @deprecated
+     * 
+     * @param player
+     * @return int
+     */
+	public int getPingV1(Player player) {
 		try {
 			int ping = 0;
-			Object o = Reflection.getCraftClass("entity.CraftPlayer").cast(p);
+			Object o = Reflection.getCraftClass("entity.CraftPlayer").cast(player);
 			Object entityplayer = o.getClass().getMethod("getHandle", new Class[0]).invoke(o, new Object[0]);
 			Field f = entityplayer.getClass().getField("ping");
 			ping = (int) Math.round(f.getDouble(entityplayer));
@@ -31,12 +35,17 @@ public class Ping {
 		}
 	}
 	
-	public int getPingV2(Player p) {
+	/**
+	 * 
+	 * @param player
+	 * @return int
+	 */
+	public int getPingV2(Player player) {
 		int ping = 0;
-		Object nmsPlayer = getNMSPlayer(p);
+		Object nmsPlayer = getNMSPlayer(player);
 		try {
 			Field f;
-			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
+			if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
 				f = nmsPlayer.getClass().getField("e");
 			} else {
 				f = nmsPlayer.getClass().getField("ping");
