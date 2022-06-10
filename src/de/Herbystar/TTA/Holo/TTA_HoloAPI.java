@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +45,7 @@ public class TTA_HoloAPI {
         version = path.substring(path.lastIndexOf(".")+1, path.length());
      
         try {
-        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
+        	if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
         		updateToNewClassStructure();
         	} else {
 	        	craftChatMessageClass = Reflection.getCraftClass("util.CraftChatMessage");
@@ -212,7 +211,11 @@ public class TTA_HoloAPI {
         worldClass = Class.forName("net.minecraft.world.level.World");
         entityClass = Class.forName("net.minecraft.world.entity.Entity");
         craftWorldClass = Reflection.getCraftClass("CraftWorld");
-        packetPlayOutSpawnEntityLivingClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving");
+        if(TTA_BukkitVersion.getVersionAsInt(2) >= 119) {
+            packetPlayOutSpawnEntityLivingClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
+        } else {
+            packetPlayOutSpawnEntityLivingClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving");
+        }
         entityLivingClass = Class.forName("net.minecraft.world.entity.EntityLiving");
         packetPlayOutEntityDestroyClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy");
         packetPlayOutEntityDestroyConstructor = packetPlayOutEntityDestroyClass.getConstructor(int[].class);

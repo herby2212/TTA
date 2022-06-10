@@ -89,7 +89,7 @@ public class TTA_Methods {
 			m.sendSubTitle(p, subtitle);
 			
 		} else if((fadeint == fadeinst && stayt == stayst && fadeoutt == fadeoutst) && 
-				TTA_BukkitVersion.getVersionAsInt(2) >= 111) {
+				TTA_BukkitVersion.getVersionAsInt(2) >= 200) {
 			p.sendTitle(title, subtitle, fadeint, stayt, fadeoutt);
 		} else {
 			NMS_Title m = new NMS_Title(Main.instance);

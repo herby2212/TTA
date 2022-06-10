@@ -16,7 +16,8 @@ public class Reflection {
 	
 	static {    
         try {
-        	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
+        	
+        	if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
         		packetClass = Class.forName("net.minecraft.network.protocol.Packet");
         	} else {
             	packetClass = getNMSClass("Packet");
@@ -84,13 +85,13 @@ public class Reflection {
 		try {
 			Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
 			Object playerConnection;
-			if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
+        	if(TTA_BukkitVersion.getVersionAsInt(2) >= 117) {
 			    playerConnection = handle.getClass().getField("b").get(handle);
 			} else {
 			    playerConnection = handle.getClass().getField("playerConnection").get(handle);
 			}
 			Method sPacket;
-			if(TTA_BukkitVersion.isVersion("1.18", 2)) {
+			if(TTA_BukkitVersion.getVersionAsInt(2) >= 118) {
 				sPacket = playerConnection.getClass().getMethod("a", packetClass);
 			} else {
 				sPacket = playerConnection.getClass().getMethod("sendPacket", packetClass);

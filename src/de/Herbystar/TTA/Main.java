@@ -239,7 +239,10 @@ public class Main extends JavaPlugin {
 			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.18 Support §2enabled!");
 			return;
 		}
-		
+		if(TTA_BukkitVersion.isVersion("1.19", 2)) {
+			Bukkit.getServer().getConsoleSender().sendMessage(this.prefix + "§6Minecraft 1.19 Support §2enabled!");
+			return;
+		}
 		this.unsupportedVersion = true;
 	}
 	
@@ -358,7 +361,7 @@ public class Main extends JavaPlugin {
 			supMethods.add("setHoloPlayers");
 			supMethods.add("removeHoloPlayers");
 		}
-		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.15", "1.16", "1.17", "1.18"), 2)) {
+		if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.15", "1.16", "1.17", "1.18", "1.19"), 2)) {
 			supMethods.remove("setBossBar");
 			supMethods.add("sendTablist");
 			supMethods.add("sendActionBar");
