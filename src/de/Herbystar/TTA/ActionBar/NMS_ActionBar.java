@@ -36,7 +36,7 @@ public class NMS_ActionBar {
     static {    
         try {
         	//1.17 & 1.18 Support
-	    	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
+	    	if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18", "1.19"), 2)) {
 	    		updateToNewClassStructure();
 	    	} else {
 	        	chatComponentTextClass = Reflection.getNMSClass("ChatComponentText");
