@@ -62,7 +62,7 @@ public class NMS_ActionBar {
         }
     }
 	
-	public void sendActionBar(Player p, String msg) {
+	public void sendActionBar(Player player, String msg) {
 		if(msg == null) {
 			msg = "";
 		}
@@ -72,25 +72,25 @@ public class NMS_ActionBar {
 				  Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm });
-			      Reflection.sendPacket(p, abPacket);
+			      Reflection.sendPacket(player, abPacket);
 			  } else if(TTA_BukkitVersion.isVersion("1.16", 2)) {
 				  Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 				  Object acm = chatMessageTypeClass.getField("GAME_INFO").get(null);
-				  Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm, p.getUniqueId() });
-			      Reflection.sendPacket(p, abPacket);
+				  Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, acm, player.getUniqueId() });
+			      Reflection.sendPacket(player, abPacket);
 		      } else if(TTA_BukkitVersion.matchVersion(Arrays.asList("1.17", "1.18"), 2)) {
 				  Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object abPacket = clientboundSetActionBarTextPacketConstructor.newInstance(new Object[] { ab });
-			      Reflection.sendPacket(p, abPacket);
+			      Reflection.sendPacket(player, abPacket);
 		      } else if(TTA_BukkitVersion.isVersion("1.19", 2)) {
 		    	  Object abText = iChatBaseComponentClass.getDeclaredClasses()[0].getMethod("a", new Class[] { String.class })
 		    			  .invoke((Object)null, new Object[] { "{\"text\":\"" + msg + "\"}" });
 		    	  Object abPacket = clientboundSetActionBarTextPacketConstructor.newInstance(new Object[] { abText });
-		    	  Reflection.sendPacket(p, abPacket);
+		    	  Reflection.sendPacket(player, abPacket);
 		      } else {
 				  Object ab = chatComponentTextConstructor.newInstance(new Object[] { msg });
 			      Object abPacket = packetPlayOutChatConstructor.newInstance(new Object[] { ab, Byte.valueOf((byte) 2) });
-			      Reflection.sendPacket(p, abPacket);
+			      Reflection.sendPacket(player, abPacket);
 		      }
 		} catch (Exception ex) {
 			ex.printStackTrace();

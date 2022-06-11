@@ -35,7 +35,7 @@ public class TTA_Methods {
 	static TTA_BossBar bar = new TTA_BossBar();
 			
 	//Tablist
-	public static void sendTablist(Player p, String header, String footer) {
+	public static void sendTablist(Player player, String header, String footer) {
 		if(header == null) {
 			header = "";
 		}
@@ -47,11 +47,11 @@ public class TTA_Methods {
 			return;
 		}
 		NMS_Tablist m = new NMS_Tablist(Main.instance);
-		m.sendTablist(p, header, footer);
+		m.sendTablist(player, header, footer);
 	}
 	
 	//ActionBar
-	public static void sendActionBar(Player p, String msg) {
+	public static void sendActionBar(Player player, String msg) {
 		if(msg == null) {
 			msg = "";
 		}
@@ -59,10 +59,10 @@ public class TTA_Methods {
 			return;
 		}
 		NMS_ActionBar m = new NMS_ActionBar(Main.instance);
-		m.sendActionBar(p, msg);
+		m.sendActionBar(player, msg);
 	}
 	
-	public static void sendActionBar(Player p, String msg, int duration) {
+	public static void sendActionBar(Player player, String msg, int duration) {
 		if(msg == null) {
 			msg = "";
 		}
@@ -70,11 +70,11 @@ public class TTA_Methods {
 			return;
 		}
 		NMS_ActionBar m = new NMS_ActionBar(Main.instance);
-		m.sendActionBar(p, msg, duration);
+		m.sendActionBar(player, msg, duration);
 	}
 	
 	//Titles
-	public static void sendTitle(Player p, String title, int fadeint, int stayt, int fadeoutt, String subtitle, int fadeinst, int stayst, int fadeoutst) {
+	public static void sendTitle(Player player, String title, int fadeint, int stayt, int fadeoutt, String subtitle, int fadeinst, int stayst, int fadeoutst) {
 		if(title == null) {
 			title = "";
 		}
@@ -83,17 +83,17 @@ public class TTA_Methods {
 		}
 		if(Main.instance.getServerVersion().equalsIgnoreCase("v1_7_R4.")) {
 			LegacyTitle m = new LegacyTitle(Main.instance);
-			m.sendTimings(p, fadeint, stayt, fadeoutt);
-			m.sendTitle(p, title);
-			m.sendTimings(p, fadeinst, stayst, fadeoutst);
-			m.sendSubTitle(p, subtitle);
+			m.sendTimings(player, fadeint, stayt, fadeoutt);
+			m.sendTitle(player, title);
+			m.sendTimings(player, fadeinst, stayst, fadeoutst);
+			m.sendSubTitle(player, subtitle);
 			
 		} else if((fadeint == fadeinst && stayt == stayst && fadeoutt == fadeoutst) && 
 				TTA_BukkitVersion.getVersionAsInt(2) >= 200) {
-			p.sendTitle(title, subtitle, fadeint, stayt, fadeoutt);
+			player.sendTitle(title, subtitle, fadeint, stayt, fadeoutt);
 		} else {
 			NMS_Title m = new NMS_Title(Main.instance);
-			m.sendTitle(p, title, fadeint, stayt, fadeoutt, subtitle, fadeinst, stayst, fadeoutst);
+			m.sendTitle(player, title, fadeint, stayt, fadeoutt, subtitle, fadeinst, stayst, fadeoutst);
 		}
 	}	
 	
