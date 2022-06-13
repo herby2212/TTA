@@ -55,7 +55,7 @@ public class TTA_Methods {
 	
 	//AnimatedTablist
 	public static void sendAnimatedTablist(Player player, List<String> headers, List<String> footers, int refreshRateInTicks) {
-		if(refreshRateInTicks > 0) {
+		if(refreshRateInTicks == 0) {
 			Bukkit.getConsoleSender().sendMessage(Main.instance.prefix + "§cSendAnimatedTablist: refreshRate needs to be higher then 0.");
 			Bukkit.getConsoleSender().sendMessage(Main.instance.prefix + "§cA minimum refresh rate of 10 ticks is recommended.");
 			return;

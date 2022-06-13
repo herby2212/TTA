@@ -6,41 +6,51 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
 import de.Herbystar.TTA.Main;
 import de.Herbystar.TTA.TTA_Methods;
 
 public class AnimatedTablist {
 	
-	private HashMap<Integer, BukkitTask> scheduler = new HashMap<Integer, BukkitTask>();
-	private HashMap<Player, ATInstance> animatedTablists = new HashMap<Player, ATInstance>();
+	private HashMap<Player, Integer> scheduler = new HashMap<Player, Integer>();
+	private HashMap<Integer, HashMap<Player, ATInstance>> animatedTablistsV2 = new HashMap<Integer, HashMap<Player, ATInstance>>();
 	
 	public void sendAnimatedTablist(Player player, List<String> headers, List<String> footers, int refreshRateInTicks) {
-		BukkitTask bukkitTask = null;
 		ATInstance atinstance = null;
 		
-		if(animatedTablists.containsKey(player)) {
-			atinstance = animatedTablists.get(player);
-			atinstance.updateHeaderAndFooter(headers, footers);
+		//Check if the refreshRate changed if so remove the tablist from the old scheduler
+		if(scheduler.containsKey(player)) {
+			int oldRefreshRate = scheduler.get(player);
+			if(oldRefreshRate != refreshRateInTicks) {
+				animatedTablistsV2.get(oldRefreshRate).remove(player);
+			}
+		}
+		
+		if(animatedTablistsV2.containsKey(refreshRateInTicks)) {
+			HashMap<Player, ATInstance> animatedTablists = animatedTablistsV2.get(refreshRateInTicks);
+			if(animatedTablists.containsKey(player)) {
+				atinstance = animatedTablists.get(player);
+				atinstance.updateHeaderAndFooter(headers, footers);
+			} else {
+				atinstance = new ATInstance(player, headers, footers);
+				animatedTablists.put(player, atinstance);
+			}
 		} else {
 			atinstance = new ATInstance(player, headers, footers);
-		}
-		animatedTablists.put(player, atinstance);
-		
-		if(scheduler.containsKey(refreshRateInTicks) == false) {
-			bukkitTask = new BukkitRunnable() {
+			HashMap<Player, ATInstance> animatedTablists = new HashMap<Player, ATInstance>();
+			animatedTablists.put(player, atinstance);
+			new BukkitRunnable() {
 				
 				@Override
 				public void run() {
-					for(ATInstance atinstance : animatedTablists.values()) {
+					for(ATInstance atinstance : animatedTablistsV2.get(refreshRateInTicks).values()) {
 						atinstance.next();
 					}
 				}
 			}.runTaskTimerAsynchronously(Main.instance, 0L, refreshRateInTicks);
 			
-			scheduler.put(refreshRateInTicks, bukkitTask);
+			animatedTablistsV2.put(refreshRateInTicks, animatedTablists);
 		}
+		scheduler.put(player, refreshRateInTicks);
 	}
 
 
@@ -91,6 +101,10 @@ public class AnimatedTablist {
 		protected void reset() {
 			this.headerNumber = 0;
 			this.footerNumber = 0;
+		}
+		
+		protected Player getPlayer() {
+			return this.player;
 		}
 	}
 }
