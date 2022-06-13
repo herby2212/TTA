@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.Herbystar.TTA.Glow.*;
 import de.Herbystar.TTA.Holo.TTA_HoloAPI;
+import de.Herbystar.TTA.Tablist.AnimatedTablist;
 import de.Herbystar.TTA.Tablist.NMS_Tablist;
 import de.Herbystar.TTA.Title.LegacyTitle;
 import de.Herbystar.TTA.Title.NMS_Title;
@@ -33,6 +34,8 @@ public class TTA_Methods {
 	
 	static TTA_HoloAPI th = new TTA_HoloAPI();
 	static TTA_BossBar bar = new TTA_BossBar();
+	private static AnimatedTablist animatedTablist = new AnimatedTablist();
+	private static NMS_Tablist tablist = new NMS_Tablist(Main.instance);
 			
 	//Tablist
 	public static void sendTablist(Player player, String header, String footer) {
@@ -46,8 +49,23 @@ public class TTA_Methods {
 		if(Main.instance.getServerVersion().equalsIgnoreCase("v1_7_R4.")) {
 			return;
 		}
-		NMS_Tablist m = new NMS_Tablist(Main.instance);
-		m.sendTablist(player, header, footer);
+		
+		tablist.sendTablist(player, header, footer);
+	}
+	
+	//AnimatedTablist
+	public static void sendAnimatedTablist(Player player, List<String> headers, List<String> footers, int refreshRateInTicks) {
+		if(refreshRateInTicks > 0) {
+			Bukkit.getConsoleSender().sendMessage(Main.instance.prefix + "§cSendAnimatedTablist: refreshRate needs to be higher then 0.");
+			Bukkit.getConsoleSender().sendMessage(Main.instance.prefix + "§cA minimum refresh rate of 10 ticks is recommended.");
+			return;
+		}
+		
+		if(Main.instance.getServerVersion().equalsIgnoreCase("v1_7_R4.")) {
+			return;
+		}
+		
+		animatedTablist.sendAnimatedTablist(player, headers, footers, refreshRateInTicks);
 	}
 	
 	//ActionBar

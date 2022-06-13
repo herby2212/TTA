@@ -41,8 +41,8 @@ public class AnimatedTablist {
 			scheduler.put(refreshRateInTicks, bukkitTask);
 		}
 	}
-	
-		
+
+
 	protected class ATInstance {
 		private int headerNumber = 0;
 		private int footerNumber = 0;
@@ -81,5 +81,4 @@ public class AnimatedTablist {
 			this.footerNumber += 1;	
 		}
 	}
-
 }
