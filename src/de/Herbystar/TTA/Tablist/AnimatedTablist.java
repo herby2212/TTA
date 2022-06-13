@@ -22,6 +22,7 @@ public class AnimatedTablist {
 		
 		if(animatedTablists.containsKey(player)) {
 			atinstance = animatedTablists.get(player);
+			atinstance.updateHeaderAndFooter(headers, footers);
 		} else {
 			atinstance = new ATInstance(player, headers, footers);
 		}
@@ -79,6 +80,17 @@ public class AnimatedTablist {
 
 			this.headerNumber += 1;
 			this.footerNumber += 1;	
+		}
+		
+		protected void updateHeaderAndFooter(List<String> headers, List<String> footers) {
+			this.headers = headers;
+			this.footers = footers;
+			this.reset();
+		}
+		
+		protected void reset() {
+			this.headerNumber = 0;
+			this.footerNumber = 0;
 		}
 	}
 }
