@@ -1,5 +1,6 @@
 package de.Herbystar.TTA.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -30,6 +31,20 @@ public class TTA_BukkitVersion {
 		return getVersion();
 	}
 	
+	private static List<Integer> getVersionPartsAsInt(int parts) {
+		String cleanVersion = getVersion().split("-")[0];
+		if(parts == 0) {
+			return null;
+		}
+		List<Integer> versions = new ArrayList<Integer>();
+		//Replacement with '-' as splitting on dot does not work for unknown reason on server startup 
+		String[] s = cleanVersion.replace(".", "-").split("-");
+		for(int i = 0; i < parts; i++) {
+			versions.add(Integer.parseInt(s[i]));
+		}
+		return versions;
+	}
+	
 	public static int getVersionAsInt() {
 		String v = getVersion(true, 0).replace(".", "");
 		return Integer.parseInt(v);
@@ -54,6 +69,18 @@ public class TTA_BukkitVersion {
 	
 	public static boolean matchVersion(List<String> versions, int parts) {
 		return versions.contains(getVersion(true, parts));
+	}
+	
+	public static int getMajorVersionAsInt() {
+		return getVersionPartsAsInt(1).get(0);
+	}
+	
+	public static int getMinorVersionAsInt() {
+		return getVersionPartsAsInt(2).get(1);
+	}
+	
+	public static int getPatchVersionAsInt() {
+		return getVersionPartsAsInt(3).get(2);
 	}
 	
 	public static String getEngine() {
