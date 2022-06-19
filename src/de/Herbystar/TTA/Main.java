@@ -273,6 +273,8 @@ public class Main extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage("");
 		Bukkit.getConsoleSender().sendMessage("Engine: " + TTA_BukkitVersion.getEngine());
 		Bukkit.getConsoleSender().sendMessage("Running version: " + TTA_BukkitVersion.getVersion());
+		Bukkit.getConsoleSender().sendMessage("Version - Major: " + TTA_BukkitVersion.getMajorVersionAsInt() + " - Minor: " + 
+				TTA_BukkitVersion.getMinorVersionAsInt() + " - Patch: " + TTA_BukkitVersion.getPatchVersionAsInt());
 		Bukkit.getConsoleSender().sendMessage("");
 		Bukkit.getConsoleSender().sendMessage("Supported Methods:");
 		Bukkit.getConsoleSender().sendMessage("");

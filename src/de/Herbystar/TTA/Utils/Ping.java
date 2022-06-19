@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public class Ping {
 	    
-    public Object getNMSPlayer(Player player) {
+    private Object getNMSPlayer(Player player) {
     	try {
     		return player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
     	} catch(Exception ex) {
