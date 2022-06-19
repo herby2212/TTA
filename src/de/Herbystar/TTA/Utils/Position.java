@@ -33,9 +33,9 @@ public class Position {
         }
     }
     
-    public static Location getPlayerLocEnderDragon(Player p) {
-    Location loc = p.getLocation();
-    switch (getCardinalDirection(p)) {
+    public static Location getPlayerLocEnderDragon(Player player) {
+    Location loc = player.getLocation();
+    switch (getCardinalDirection(player)) {
       case ("N") :
           loc.add(0, 0, -150);
           break;
@@ -57,18 +57,17 @@ public class Position {
       case ("NW") :
           loc.add(-150, 0, -150);
           break;
-    case ("SW") :
-          loc.add(-150, 0, 150);
-          break;
+	    case ("SW") :
+	          loc.add(-150, 0, 150);
+	          break;
+	    }
+    
+    	return loc;    
     }
     
-    
-    return loc;    
-    }
-    
-    public static Location getPlayerLocWither(Player p) {
-        Location loc = p.getLocation();
-        switch (getCardinalDirection(p)) {
+    public static Location getPlayerLocWither(Player player) {
+        Location loc = player.getLocation();
+        switch (getCardinalDirection(player)) {
           case ("N") :
               loc.add(0, 0, -50);
               break;
@@ -95,7 +94,6 @@ public class Position {
               break;
         }
         
-        return loc;
-        
-        }
+        return loc;    
+    }
 }

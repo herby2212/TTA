@@ -82,11 +82,8 @@ public class TTA_HoloAPI {
         Location displayLoc = loc.clone().add(0, (ABS * lines.size()) - 1.97D, 0);
         for (int i = 0; i < lines.size(); i++) {
         	if(TTA_BukkitVersion.getVersionAsInt(2) >= 115) {
-        		return;
-        		/*
             	this.createLine(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
             	displayLoc.add(0, ABS * (-1), 0);
-            	*/
         	} else {
                 Object packet = this.getPacket(this.loc.getWorld(), displayLoc.getX(), displayLoc.getY(), displayLoc.getZ(), this.lines.get(i));
                 this.spawnCache.add(packet);
@@ -122,8 +119,7 @@ public class TTA_HoloAPI {
         return false;
     }
     
-    @SuppressWarnings("unused")
-	private void createLine(World w, double x, double y, double z, String text) {
+    private void createLine(World w, double x, double y, double z, String text) {
         ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, x, y, z), EntityType.ARMOR_STAND);
         a.setVisible(false);
         a.setCollidable(false);
