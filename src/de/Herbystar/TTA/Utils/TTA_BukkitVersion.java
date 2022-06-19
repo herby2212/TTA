@@ -40,7 +40,11 @@ public class TTA_BukkitVersion {
 		//Replacement with '-' as splitting on dot does not work for unknown reason on server startup 
 		String[] s = cleanVersion.replace(".", "-").split("-");
 		for(int i = 0; i < parts; i++) {
-			versions.add(Integer.parseInt(s[i]));
+			int version = 0;
+			try {
+				version = Integer.parseInt(s[i]);
+			} catch(IndexOutOfBoundsException ex) {}
+			versions.add(version);
 		}
 		return versions;
 	}
